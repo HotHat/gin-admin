@@ -45,7 +45,7 @@ serve: build
 	./$(SERVER_BIN) start $(START_ARGS)
 
 serve-d: build
-	./$(SERVER_BIN) start $(START_ARGS) -d
+	./$(SERVER_BIN) start $(START_ARGS) --daemon
 
 stop:
 	./$(SERVER_BIN) stop
