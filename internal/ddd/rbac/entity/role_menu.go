@@ -3,21 +3,16 @@ package entity
 import (
 	"time"
 
-	"github.com/LyricTian/gin-admin/v10/internal/config"
 	"github.com/LyricTian/gin-admin/v10/pkg/util"
 )
 
 // Role permissions for RBAC
 type RoleMenu struct {
-	ID        int       `json:"id" gorm:"size:20;primarykey"` // Unique ID
-	RoleID    string    `json:"role_id" gorm:"size:20;index"` // From Role.ID
-	MenuID    string    `json:"menu_id" gorm:"size:20;index"` // From Menu.ID
-	CreatedAt time.Time `json:"created_at" gorm:"index;"`     // Create time
-	UpdatedAt time.Time `json:"updated_at" gorm:"index;"`     // Update time
-}
-
-func (a *RoleMenu) TableName() string {
-	return config.C.FormatTableName("role_menu")
+	ID        uint      `json:"id" gorm:"primarykey"`     // Unique ID
+	RoleID    uint      `json:"role_id" gorm:"index"`     // From Role.ID
+	MenuID    uint      `json:"menu_id" gorm:"index"`     // From Menu.ID
+	CreatedAt time.Time `json:"created_at" gorm:"index;"` // Create time
+	UpdatedAt time.Time `json:"updated_at" gorm:"index;"` // Update time
 }
 
 // Defining the query parameters for the `RoleMenu` struct.

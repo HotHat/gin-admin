@@ -4,12 +4,11 @@ import (
 	"time"
 
 	"github.com/LyricTian/gin-admin/v10/internal/config"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
 )
 
 // Logger management
 type Logger struct {
-	ID        int       `gorm:"primaryKey;" json:"id"`                   // Unique ID
+	ID        uint      `gorm:"primaryKey;" json:"id"`                   // Unique ID
 	Level     string    `gorm:"size:20;index;" json:"level"`             // Log level
 	TraceID   string    `gorm:"size:64;index;" json:"trace_id"`          // Trace ID
 	UserID    string    `gorm:"size:20;index;" json:"user_id"`           // User ID
@@ -24,29 +23,6 @@ type Logger struct {
 
 func (a *Logger) TableName() string {
 	return config.C.FormatTableName("logger")
-}
-
-// Defining the query parameters for the `Logger` struct.
-type LoggerQueryParam struct {
-	util.PaginationParam
-	Level        string `form:"level"`     // Log level
-	TraceID      string `form:"traceID"`   // Trace ID
-	LikeUserName string `form:"userName"`  // User Name
-	Tag          string `form:"tag"`       // Log tag
-	LikeMessage  string `form:"message"`   // Log message
-	StartTime    string `form:"startTime"` // Start time
-	EndTime      string `form:"endTime"`   // End time
-}
-
-// Defining the query options for the `Logger` struct.
-type LoggerQueryOptions struct {
-	util.QueryOptions
-}
-
-// Defining the query result for the `Logger` struct.
-type LoggerQueryResult struct {
-	Data       Loggers
-	PageResult *util.PaginationResult
 }
 
 // Defining the slice of `Logger` struct.

@@ -9,7 +9,7 @@ type ApiV1 struct {
 	LoginAPI *api.Login
 }
 
-func (a ApiV1) RegisterRoute(gin *gin.Engine) {
+func (a *ApiV1) RegisterRoute(gin *gin.Engine) {
 	v1 := gin.Group("v2")
 
 	captcha := v1.Group("captcha")
