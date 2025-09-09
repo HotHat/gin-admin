@@ -2,6 +2,8 @@ package entity
 
 import (
 	"time"
+
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/comm"
 )
 
 const (
@@ -13,7 +15,7 @@ const (
 
 // Role management for RBAC
 type Role struct {
-	ID          uint      `json:"id" gorm:"primarykey;"`        // Unique ID
+	ID          comm.ID   `json:"id" gorm:"primarykey;"`        // Unique ID
 	Code        string    `json:"code" gorm:"size:32;index;"`   // Code of role (unique)
 	Name        string    `json:"name" gorm:"size:128;index"`   // Display name of role
 	Description string    `json:"description" gorm:"size:1024"` // Details about role

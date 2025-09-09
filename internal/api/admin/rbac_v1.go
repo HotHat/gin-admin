@@ -1,16 +1,19 @@
-package v1
+package admin
 
 import (
 	"github.com/LyricTian/gin-admin/v10/internal/mods/rbac/api"
 	"github.com/gin-gonic/gin"
 )
 
-type ApiV1 struct {
+type RBACRouteV1 struct {
 	LoginAPI *api.Login
+	Handler  *AdminHandler
 }
 
-func (a *ApiV1) RegisterRoute(gin *gin.Engine) {
-	v1 := gin.Group("v2")
+func (a *RBACRouteV1) RegisterRoute(g *gin.Engine) {
+	mds := a.Handler.getHandlers()
+
+	v1 := g.Group("v2", mds...)
 
 	captcha := v1.Group("captcha")
 	{

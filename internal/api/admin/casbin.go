@@ -13,7 +13,10 @@ import (
 	"time"
 
 	"github.com/LyricTian/gin-admin/v10/internal/config"
-	"github.com/LyricTian/gin-admin/v10/internal/mods/rbac/dal"
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/comm"
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/dto"
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/entity"
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/repo"
 	"github.com/LyricTian/gin-admin/v10/internal/mods/rbac/schema"
 	"github.com/LyricTian/gin-admin/v10/pkg/cachex"
 	"github.com/LyricTian/gin-admin/v10/pkg/logging"
@@ -24,12 +27,12 @@ import (
 
 // Load rbac permissions to casbin
 type Casbinx struct {
-	enforcer        *atomic.Value `wire:"-"`
-	ticker          *time.Ticker  `wire:"-"`
-	Cache           cachex.Cacher
-	MenuDAL         *dal.Menu
-	MenuResourceDAL *dal.MenuResource
-	RoleDAL         *dal.Role
+	enforcer         *atomic.Value `wire:"-"`
+	ticker           *time.Ticker  `wire:"-"`
+	Cache            cachex.Cacher
+	MenuRepo         *repo.MenuRepo
+	MenuResourceRepo *repo.MenuResourceRepo
+	RoleRepo         *repo.RoleRepo
 }
 
 func (a *Casbinx) GetEnforcer() *casbin.Enforcer {
@@ -40,8 +43,8 @@ func (a *Casbinx) GetEnforcer() *casbin.Enforcer {
 }
 
 type policyQueueItem struct {
-	RoleID    string
-	Resources schema.MenuResources
+	RoleID    comm.ID
+	Resources entity.MenuResources
 }
 
 func (a *Casbinx) Load(ctx context.Context) error {
@@ -60,9 +63,9 @@ func (a *Casbinx) Load(ctx context.Context) error {
 
 func (a *Casbinx) load(ctx context.Context) error {
 	start := time.Now()
-	roleResult, err := a.RoleDAL.Query(ctx, schema.RoleQueryParam{
-		Status: schema.RoleStatusEnabled,
-	}, schema.RoleQueryOptions{
+	roleResult, err := a.RoleRepo.Query(ctx, dto.RoleQueryParam{
+		Status: entity.RoleStatusEnabled,
+	}, dto.RoleQueryOptions{
 		QueryOptions: util.QueryOptions{SelectFields: []string{"id"}},
 	})
 	if err != nil {
@@ -95,7 +98,7 @@ func (a *Casbinx) load(ctx context.Context) error {
 	}
 
 	for _, item := range roleResult.Data {
-		resources, err := a.queryRoleResources(ctx, item.ID)
+		resources, err := a.queryRoleResources(ctx, comm.IDToStr(item.ID))
 		if err != nil {
 			logging.Context(ctx).Error("Failed to query role resources", zap.Error(err))
 			continue
@@ -139,11 +142,11 @@ func (a *Casbinx) load(ctx context.Context) error {
 	return nil
 }
 
-func (a *Casbinx) queryRoleResources(ctx context.Context, roleID string) (schema.MenuResources, error) {
-	menuResult, err := a.MenuDAL.Query(ctx, schema.MenuQueryParam{
+func (a *Casbinx) queryRoleResources(ctx context.Context, roleID string) (entity.MenuResources, error) {
+	menuResult, err := a.MenuRepo.Query(ctx, dto.MenuQueryParam{
 		RoleID: roleID,
 		Status: schema.MenuStatusEnabled,
-	}, schema.MenuQueryOptions{
+	}, dto.MenuQueryOptions{
 		QueryOptions: util.QueryOptions{
 			SelectFields: []string{"id", "parent_id", "parent_path"},
 		},
@@ -154,8 +157,8 @@ func (a *Casbinx) queryRoleResources(ctx context.Context, roleID string) (schema
 		return nil, nil
 	}
 
-	menuIDs := make([]string, 0, len(menuResult.Data))
-	menuIDMapper := make(map[string]struct{})
+	menuIDs := make([]comm.ID, 0, len(menuResult.Data))
+	menuIDMapper := make(map[comm.ID]struct{})
 	for _, item := range menuResult.Data {
 		if _, ok := menuIDMapper[item.ID]; ok {
 			continue
@@ -163,10 +166,11 @@ func (a *Casbinx) queryRoleResources(ctx context.Context, roleID string) (schema
 		menuIDs = append(menuIDs, item.ID)
 		menuIDMapper[item.ID] = struct{}{}
 		if pp := item.ParentPath; pp != "" {
-			for _, pid := range strings.Split(pp, util.TreePathDelimiter) {
-				if pid == "" {
+			for _, pidStr := range strings.Split(pp, util.TreePathDelimiter) {
+				if pidStr == "" {
 					continue
 				}
+				pid, _ := comm.StrToID(pidStr)
 				if _, ok := menuIDMapper[pid]; ok {
 					continue
 				}
@@ -176,8 +180,8 @@ func (a *Casbinx) queryRoleResources(ctx context.Context, roleID string) (schema
 		}
 	}
 
-	menuResourceResult, err := a.MenuResourceDAL.Query(ctx, schema.MenuResourceQueryParam{
-		MenuIDs: menuIDs,
+	menuResourceResult, err := a.MenuResourceRepo.Query(ctx, dto.MenuResourceQueryParam{
+		MenuIDs: comm.IDArrToStr(menuIDs),
 	})
 	if err != nil {
 		return nil, err
