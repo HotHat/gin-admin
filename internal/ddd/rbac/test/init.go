@@ -22,7 +22,7 @@ func SetConfig() {
 	config.MustLoad(workDir, strings.Split("dev", ",")...)
 	config.C.General.WorkDir = workDir
 	config.C.Middleware.Static.Dir = staticDir
-	config.C.Print()
+	//config.C.Print()
 	config.C.PreLoad()
 
 	TestContext = context.Background()

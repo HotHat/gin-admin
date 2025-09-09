@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/dto"
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/entity"
 	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/test"
 )
 
@@ -35,6 +38,38 @@ func TestUserGet(t *testing.T) {
 		fmt.Println("Error: ", err)
 
 	}
+	fmt.Println(user)
+}
 
+func TestCreatesUser(t *testing.T) {
+
+	userForm := dto.UserForm{
+		Username: "hello",
+		Password: "123456",
+		Name:     "world",
+		Phone:    "13800138000",
+		Email:    "aaa",
+		Remark:   "",
+		Status:   1,
+		Roles: entity.UserRoles{
+			{
+				RoleID:    1,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+				RoleName:  "haha",
+			},
+		},
+	}
+	err := userForm.Validate()
+	if err != nil {
+		t.Error(err)
+	}
+
+	user, err := serviceTest.userService.Create(test.TestContext, &userForm)
+
+	if err != nil {
+		//t.Errorf("Error:", err)
+		fmt.Println("Error: ", err)
+	}
 	fmt.Println(user)
 }

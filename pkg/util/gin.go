@@ -118,19 +118,19 @@ func ResError(c *gin.Context, err error, status ...int) {
 		ierr = errors.FromError(errors.InternalServerError("", err.Error()))
 	}
 
-	code := int(ierr.Code)
-	if len(status) > 0 {
-		code = status[0]
-	}
+	code := int(ierr.Status)
+	//if len(status) > 0 {
+	//	code = status[0]
+	//}
 
 	if code >= 500 {
 		ctx := c.Request.Context()
 		ctx = logging.NewTag(ctx, logging.TagKeySystem)
 		ctx = logging.NewStack(ctx, fmt.Sprintf("%+v", err))
 		logging.Context(ctx).Error("Internal server error", zap.Error(err))
-		ierr.Detail = http.StatusText(http.StatusInternalServerError)
+		//ierr.Detail = http.StatusText(http.StatusInternalServerError)
 	}
 
-	ierr.Code = int32(code)
+	//ierr.Code = int32(code)
 	ResJSON(c, code, ResponseResult{Error: ierr})
 }

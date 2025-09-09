@@ -33,12 +33,23 @@ const (
 	DefaultRequestTimeoutID        = "request_timeout"
 )
 
+type ErrorDetail struct {
+	Field    string `json:"field"`
+	Value    string `json:"value"`
+	Issue    string `json:"issue"`
+	location struct {
+		Body  string `json:"body"`
+		Url   string `json:"url"`
+		Query string `json:"query"`
+	}
+}
+
 // Customize the error structure for implementation errors.Error interface
 type Error struct {
-	ID     string `json:"id,omitempty"`
-	Code   int32  `json:"code,omitempty"`
-	Detail string `json:"detail,omitempty"`
-	Status string `json:"status,omitempty"`
+	Code    string       `json:"code,omitempty"`
+	Message string       `json:"message,omitempty"`
+	Detail  *ErrorDetail `json:"detail,omitempty"`
+	Status  int32        `json:"-"`
 }
 
 func (e *Error) Error() string {
@@ -47,12 +58,11 @@ func (e *Error) Error() string {
 }
 
 // New generates a custom error.
-func New(id, detail string, code int32) error {
+func New(code, message string, status int32) error {
 	return &Error{
-		ID:     id,
-		Code:   code,
-		Detail: detail,
-		Status: http.StatusText(int(code)),
+		Code:    code,
+		Message: message,
+		Status:  status,
 	}
 }
 
@@ -60,140 +70,130 @@ func New(id, detail string, code int32) error {
 // fails, it will set the given string as the error detail.
 func Parse(err string) *Error {
 	e := new(Error)
-	errr := json.Unmarshal([]byte(err), e)
-	if errr != nil {
-		e.Detail = err
+	err1 := json.Unmarshal([]byte(err), e)
+	if err1 != nil {
+		e.Message = err
 	}
 	return e
 }
 
 // BadRequest generates a 400 error.
-func BadRequest(id, format string, a ...interface{}) error {
-	if id == "" {
-		id = DefaultBadRequestID
+func BadRequest(code, format string, a ...interface{}) error {
+	if code == "" {
+		code = DefaultBadRequestID
 	}
 	return &Error{
-		ID:     id,
-		Code:   http.StatusBadRequest,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(http.StatusBadRequest),
+		Code:    code,
+		Message: fmt.Sprintf(format, a...),
+		Status:  http.StatusBadRequest,
 	}
 }
 
 // Unauthorized generates a 401 error.
-func Unauthorized(id, format string, a ...interface{}) error {
-	if id == "" {
-		id = DefaultUnauthorizedID
+func Unauthorized(code, format string, a ...interface{}) error {
+	if code == "" {
+		code = DefaultUnauthorizedID
 	}
 	return &Error{
-		ID:     id,
-		Code:   http.StatusUnauthorized,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(http.StatusUnauthorized),
+		Code:    code,
+		Message: fmt.Sprintf(format, a...),
+		Status:  http.StatusUnauthorized,
 	}
 }
 
 // Forbidden generates a 403 error.
-func Forbidden(id, format string, a ...interface{}) error {
-	if id == "" {
-		id = DefaultForbiddenID
+func Forbidden(code, format string, a ...interface{}) error {
+	if code == "" {
+		code = DefaultForbiddenID
 	}
 	return &Error{
-		ID:     id,
-		Code:   http.StatusForbidden,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(http.StatusForbidden),
+		Code:    code,
+		Message: fmt.Sprintf(format, a...),
+		Status:  http.StatusForbidden,
 	}
 }
 
 // NotFound generates a 404 error.
-func NotFound(id, format string, a ...interface{}) error {
-	if id == "" {
-		id = DefaultNotFoundID
+func NotFound(code, format string, a ...interface{}) error {
+	if code == "" {
+		code = DefaultNotFoundID
 	}
 	return &Error{
-		ID:     id,
-		Code:   http.StatusNotFound,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(http.StatusNotFound),
+		Code:    code,
+		Message: fmt.Sprintf(format, a...),
+		Status:  http.StatusNotFound,
 	}
 }
 
 // MethodNotAllowed generates a 405 error.
-func MethodNotAllowed(id, format string, a ...interface{}) error {
-	if id == "" {
-		id = DefaultMethodNotAllowedID
+func MethodNotAllowed(code, format string, a ...interface{}) error {
+	if code == "" {
+		code = DefaultMethodNotAllowedID
 	}
 	return &Error{
-		ID:     id,
-		Code:   http.StatusMethodNotAllowed,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(http.StatusMethodNotAllowed),
+		Code:    code,
+		Message: fmt.Sprintf(format, a...),
+		Status:  http.StatusMethodNotAllowed,
 	}
 }
 
 // TooManyRequests generates a 429 error.
-func TooManyRequests(id, format string, a ...interface{}) error {
-	if id == "" {
-		id = DefaultTooManyRequestsID
+func TooManyRequests(code, format string, a ...interface{}) error {
+	if code == "" {
+		code = DefaultTooManyRequestsID
 	}
 	return &Error{
-		ID:     id,
-		Code:   http.StatusTooManyRequests,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(http.StatusTooManyRequests),
+		Code:    code,
+		Message: fmt.Sprintf(format, a...),
+		Status:  http.StatusTooManyRequests,
 	}
 }
 
 // Timeout generates a 408 error.
-func Timeout(id, format string, a ...interface{}) error {
-	if id == "" {
-		id = DefaultRequestTimeoutID
+func Timeout(code, format string, a ...interface{}) error {
+	if code == "" {
+		code = DefaultRequestTimeoutID
 	}
 	return &Error{
-		ID:     id,
-		Code:   http.StatusRequestTimeout,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(http.StatusRequestTimeout),
+		Code:    code,
+		Message: fmt.Sprintf(format, a...),
+		Status:  http.StatusRequestTimeout,
 	}
 }
 
 // Conflict generates a 409 error.
-func Conflict(id, format string, a ...interface{}) error {
-	if id == "" {
-		id = DefaultConflictID
+func Conflict(code, format string, a ...interface{}) error {
+	if code == "" {
+		code = DefaultConflictID
 	}
 	return &Error{
-		ID:     id,
-		Code:   http.StatusConflict,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(http.StatusConflict),
+		Code:    code,
+		Message: fmt.Sprintf(format, a...),
+		Status:  http.StatusConflict,
 	}
 }
 
 // RequestEntityTooLarge generates a 413 error.
-func RequestEntityTooLarge(id, format string, a ...interface{}) error {
-	if id == "" {
-		id = DefaultRequestEntityTooLargeID
+func RequestEntityTooLarge(code, format string, a ...interface{}) error {
+	if code == "" {
+		code = DefaultRequestEntityTooLargeID
 	}
 	return &Error{
-		ID:     id,
-		Code:   http.StatusRequestEntityTooLarge,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(http.StatusRequestEntityTooLarge),
+		Code:    code,
+		Message: fmt.Sprintf(format, a...),
+		Status:  http.StatusRequestEntityTooLarge,
 	}
 }
 
 // InternalServerError generates a 500 error.
-func InternalServerError(id, format string, a ...interface{}) error {
-	if id == "" {
-		id = DefaultInternalServerErrorID
+func InternalServerError(code, format string, a ...interface{}) error {
+	if code == "" {
+		code = DefaultInternalServerErrorID
 	}
 	return &Error{
-		ID:     id,
-		Code:   http.StatusInternalServerError,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(http.StatusInternalServerError),
+		Code:    code,
+		Message: fmt.Sprintf(format, a...),
+		Status:  http.StatusInternalServerError,
 	}
 }
 
