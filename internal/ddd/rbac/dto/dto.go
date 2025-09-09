@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/comm"
 	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/entity"
 	"github.com/LyricTian/gin-admin/v10/pkg/crypto/hash"
 	"github.com/LyricTian/gin-admin/v10/pkg/errors"
@@ -35,7 +36,7 @@ type MenuForm struct {
 	Path        string               `json:"path"`                                             // Access path of menu
 	Properties  string               `json:"properties"`                                       // Properties of menu (JSON)
 	Status      string               `json:"status" binding:"required,oneof=disabled enabled"` // Status of menu (enabled, disabled)
-	ParentID    uint                 `json:"parent_id"`                                        // Parent ID (From Menu.ID)
+	ParentID    comm.ID              `json:"parent_id"`                                        // Parent ID (From Menu.ID)
 	Resources   entity.MenuResources `json:"resources"`                                        // Resources of menu
 }
 
@@ -224,9 +225,9 @@ func (a *UserForm) FillTo(user *entity.User) error {
 // UserRoleQueryParam Defining the query parameters for the `UserRole` struct.
 type UserRoleQueryParam struct {
 	util.PaginationParam
-	InUserIDs []int  `form:"-"` // From User.ID
-	UserID    string `form:"-"` // From User.ID
-	RoleID    string `form:"-"` // From Role.ID
+	InUserIDs []comm.ID `form:"-"` // From User.ID
+	UserID    comm.ID   `form:"-"` // From User.ID
+	RoleID    comm.ID   `form:"-"` // From Role.ID
 }
 
 // UserRoleQueryOptions Defining the query options for the `UserRole` struct.
@@ -256,7 +257,7 @@ func (a *UserRoleForm) FillTo(userRole *entity.UserRole) error {
 
 type RoleMenuQueryParam struct {
 	util.PaginationParam
-	RoleID string `form:"-"` // From Role.ID
+	RoleID comm.ID `form:"-"` // From Role.ID
 }
 
 // RoleMenuQueryOptions Defining the query options for the `RoleMenu` struct.

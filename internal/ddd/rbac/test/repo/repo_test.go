@@ -1,53 +1,24 @@
-package test
+package repo
 
 import (
-	"context"
-	"flag"
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 
-	"github.com/LyricTian/gin-admin/v10/internal/config"
 	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/dto"
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/test"
 	"github.com/LyricTian/gin-admin/v10/pkg/util"
 )
 
 var repoTest *RepoTest
 
-var ctx context.Context
-
-func setConfig() {
-	var workDirFlag = flag.String("workDir", "", "The working directory.")
-	flag.Parse()
-
-	fmt.Println("Work dir:", *workDirFlag, flag.Args())
-
-	workDir := *workDirFlag
-	staticDir := ""
-	config.MustLoad(workDir, strings.Split("dev", ",")...)
-	config.C.General.WorkDir = workDir
-	config.C.Middleware.Static.Dir = staticDir
-	config.C.Print()
-	config.C.PreLoad()
-
-	ctx = context.Background()
-
-	repoL, clearFun, err := BuildRepo(ctx)
-
-	if err != nil {
-		clearFun()
-	}
-
-	//
-	repoTest = repoL
-}
-
 func TestMain(m *testing.M) {
 	// --- SETUP ---
 	fmt.Println("Setting up test suite...")
 	// For example, connect to a database
-	setConfig()
+	//setConfig()
+	test.SetConfig()
+	repoTest, _, _ = BuildRepo(test.TestContext)
 
 	// --- RUN TESTS ---
 	code := m.Run()
@@ -61,7 +32,7 @@ func TestMain(m *testing.M) {
 
 // A simple test to demonstrate
 func TestUserQuery(t *testing.T) {
-	queryResult, _ := repoTest.UserRepo.Query(ctx, dto.UserQueryParam{
+	queryResult, _ := repoTest.UserRepo.Query(test.TestContext, dto.UserQueryParam{
 		PaginationParam: util.PaginationParam{
 			Pagination: true,
 			OnlyCount:  false,

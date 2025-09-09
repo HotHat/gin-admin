@@ -2,16 +2,18 @@ package entity
 
 import (
 	"time"
+
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/comm"
 )
 
 const (
-	UserStatusActivated = "activated"
-	UserStatusFreezed   = "freezed"
+	UserStatusActivated = 1
+	UserStatusFreezed   = 0
 )
 
 // User management for RBAC
 type User struct {
-	ID        uint      `json:"id" gorm:"primarykey;"`         // Unique ID
+	ID        comm.ID   `json:"id" gorm:"primarykey;"`         // Unique ID
 	Username  string    `json:"username" gorm:"size:64;index"` // Username for login
 	Name      string    `json:"name" gorm:"size:64;index"`     // Name of user
 	Password  string    `json:"-" gorm:"size:64;"`             // Password for login (encrypted)
@@ -27,8 +29,8 @@ type User struct {
 // Defining the slice of `User` struct.
 type Users []*User
 
-func (a Users) ToIDs() []uint {
-	var ids []uint
+func (a Users) ToIDs() []comm.ID {
+	var ids []comm.ID
 	for _, item := range a {
 		ids = append(ids, item.ID)
 	}

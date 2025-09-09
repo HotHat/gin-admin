@@ -1,4 +1,4 @@
-package entity
+package dto
 
 type Captcha struct {
 	CaptchaID string `json:"captcha_id"` // Captcha ID

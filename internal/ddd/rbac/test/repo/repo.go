@@ -1,4 +1,4 @@
-package test
+package repo
 
 import "github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/repo"
 

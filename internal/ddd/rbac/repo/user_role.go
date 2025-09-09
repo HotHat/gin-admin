@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/LyricTian/gin-admin/v10/internal/config"
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/comm"
 	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/dto"
 	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/entity"
 	"github.com/LyricTian/gin-admin/v10/internal/mods/rbac/schema"
@@ -43,10 +44,10 @@ func (a *UserRoleRepo) Query(ctx context.Context, params dto.UserRoleQueryParam,
 	if v := params.InUserIDs; len(v) > 0 {
 		db = db.Where("a.user_id IN (?)", v)
 	}
-	if v := params.UserID; len(v) > 0 {
+	if v := params.UserID; v > 0 {
 		db = db.Where("a.user_id = ?", v)
 	}
-	if v := params.RoleID; len(v) > 0 {
+	if v := params.RoleID; v > 0 {
 		db = db.Where("a.role_id = ?", v)
 	}
 
@@ -99,17 +100,17 @@ func (a *UserRoleRepo) Update(ctx context.Context, item *entity.UserRole) error 
 }
 
 // Delete the specified user role from the database.
-func (a *UserRoleRepo) Delete(ctx context.Context, id int) error {
+func (a *UserRoleRepo) Delete(ctx context.Context, id comm.ID) error {
 	result := GetUserRoleDB(ctx, a.DB).Where("id=?", id).Delete(new(entity.UserRole))
 	return errors.WithStack(result.Error)
 }
 
-func (a *UserRoleRepo) DeleteByUserID(ctx context.Context, userID int) error {
+func (a *UserRoleRepo) DeleteByUserID(ctx context.Context, userID comm.ID) error {
 	result := GetUserRoleDB(ctx, a.DB).Where("user_id=?", userID).Delete(new(entity.UserRole))
 	return errors.WithStack(result.Error)
 }
 
-func (a *UserRoleRepo) DeleteByRoleID(ctx context.Context, roleID int) error {
+func (a *UserRoleRepo) DeleteByRoleID(ctx context.Context, roleID comm.ID) error {
 	result := GetUserRoleDB(ctx, a.DB).Where("role_id=?", roleID).Delete(new(entity.UserRole))
 	return errors.WithStack(result.Error)
 }

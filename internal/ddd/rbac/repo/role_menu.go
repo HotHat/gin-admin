@@ -33,7 +33,7 @@ func (a *RoleMenuRepo) Query(ctx context.Context, params dto.RoleMenuQueryParam,
 	}
 
 	db := GetRoleMenuDB(ctx, a.DB)
-	if v := params.RoleID; len(v) > 0 {
+	if v := params.RoleID; v > 0 {
 		db = db.Where("role_id = ?", v)
 	}
 

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/LyricTian/gin-admin/v10/internal/config"
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/comm"
 	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/dto"
 	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/entity"
 	"github.com/LyricTian/gin-admin/v10/internal/mods/rbac/schema"
@@ -58,7 +59,7 @@ func (a *UserRepo) Query(ctx context.Context, params dto.UserQueryParam, opts ..
 }
 
 // Get the specified user from the database.
-func (a *UserRepo) Get(ctx context.Context, id int, opts ...dto.UserQueryOptions) (*entity.User, error) {
+func (a *UserRepo) Get(ctx context.Context, id comm.ID, opts ...dto.UserQueryOptions) (*entity.User, error) {
 	var opt dto.UserQueryOptions
 	if len(opts) > 0 {
 		opt = opts[0]
@@ -91,7 +92,7 @@ func (a *UserRepo) GetByUsername(ctx context.Context, username string, opts ...d
 }
 
 // Exists Exist checks if the specified user exists in the database.
-func (a *UserRepo) Exists(ctx context.Context, id int) (bool, error) {
+func (a *UserRepo) Exists(ctx context.Context, id comm.ID) (bool, error) {
 	ok, err := util.Exists(ctx, GetUserDB(ctx, a.DB).Where("id=?", id))
 	return ok, errors.WithStack(err)
 }
@@ -120,12 +121,12 @@ func (a *UserRepo) Update(ctx context.Context, item *entity.User, selectFields .
 }
 
 // Delete the specified user from the database.
-func (a *UserRepo) Delete(ctx context.Context, id int) error {
+func (a *UserRepo) Delete(ctx context.Context, id comm.ID) error {
 	result := GetUserDB(ctx, a.DB).Where("id=?", id).Delete(new(schema.User))
 	return errors.WithStack(result.Error)
 }
 
-func (a *UserRepo) UpdatePasswordByID(ctx context.Context, id int, password string) error {
+func (a *UserRepo) UpdatePasswordByID(ctx context.Context, id comm.ID, password string) error {
 	result := GetUserDB(ctx, a.DB).Where("id=?", id).Select("password").Updates(entity.User{Password: password})
 	return errors.WithStack(result.Error)
 }
