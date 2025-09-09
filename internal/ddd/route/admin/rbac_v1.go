@@ -1,16 +1,16 @@
 package admin
 
 import (
-	"github.com/LyricTian/gin-admin/v10/internal/mods/rbac/api"
+	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/api"
 	"github.com/gin-gonic/gin"
 )
 
 type RBACRouteV1 struct {
-	LoginAPI *api.Login
+	LoginAPI *api.LoginApi
 	Handler  *AdminHandler
 }
 
-func (a *RBACRouteV1) RegisterRoute(g *gin.Engine) {
+func (a *RBACRouteV1) Register(g *gin.Engine) {
 	mds := a.Handler.getHandlers()
 
 	v1 := g.Group("v2", mds...)

@@ -302,7 +302,7 @@ func (a *AuthService) GetUserInfo(ctx context.Context) (*entity.User, error) {
 }
 
 // UpdatePassword Change login password
-func (a *AuthService) UpdatePassword(ctx context.Context, updateItem *schema.UpdateLoginPassword) error {
+func (a *AuthService) UpdatePassword(ctx context.Context, updateItem *dto.UpdateLoginPassword) error {
 	if util.FromIsRootUser(ctx) {
 		return resp.BadRequest("", "Root user cannot change password")
 	}
@@ -379,7 +379,7 @@ func (a *AuthService) QueryMenus(ctx context.Context) (entity.Menus, error) {
 }
 
 // UpdateUser Update current user info
-func (a *AuthService) UpdateUser(ctx context.Context, updateItem *schema.UpdateCurrentUser) error {
+func (a *AuthService) UpdateUser(ctx context.Context, updateItem *dto.UpdateCurrentUser) error {
 	if util.FromIsRootUser(ctx) {
 		return resp.BadRequest("", "Root user cannot update")
 	}
