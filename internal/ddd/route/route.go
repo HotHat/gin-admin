@@ -1,7 +1,9 @@
 package route
 
 import (
-	"github.com/LyricTian/gin-admin/v10/pkg/comm"
+	"context"
+
+	"github.com/HotHat/gin-admin/v10/pkg/comm"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,9 +15,9 @@ func NewRoute() *Route {
 	return &Route{}
 }
 
-func (r *Route) Register(gin *gin.Engine) {
+func (r *Route) Register(ctx context.Context, gin *gin.Engine) {
 	for _, route := range r.Routes {
-		route.Register(gin)
+		route.Register(ctx, gin)
 	}
 }
 

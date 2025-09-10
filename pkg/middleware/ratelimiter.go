@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/LyricTian/gin-admin/v10/pkg/errors"
-	"github.com/LyricTian/gin-admin/v10/pkg/logging"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
+	"github.com/HotHat/gin-admin/v10/pkg/errors"
+	"github.com/HotHat/gin-admin/v10/pkg/logging"
+	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-redis/redis_rate/v9"

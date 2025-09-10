@@ -4,30 +4,30 @@
 //go:build !wireinject
 // +build !wireinject
 
-package service
+package wirex
 
 import (
 	"context"
-
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/api"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/repo"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/service"
-	"github.com/HotHat/gin-admin/v10/internal/wirex"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/route/admin"
 	"github.com/HotHat/gin-admin/v10/pkg/util"
 )
 
 // Injectors from wire.go:
 
-func BuildService(ctx context.Context) (*ServiceTest, func(), error) {
-	cacher, cleanup, err := wirex.InitCacher(ctx)
+func BuildInjector(ctx context.Context) (*Injector, func(), error) {
+	cacher, cleanup, err := InitCacher(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
-	auther, cleanup2, err := wirex.InitAuth(ctx)
+	auther, cleanup2, err := InitAuth(ctx)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	db, cleanup3, err := wirex.InitDB(ctx)
+	db, cleanup3, err := InitDB(ctx)
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -59,11 +59,33 @@ func BuildService(ctx context.Context) (*ServiceTest, func(), error) {
 		MenuRepo:     menuRepo,
 		UserService:  userService,
 	}
-	serviceTest := &ServiceTest{
+	loginApi := &api.LoginApi{
 		AuthService: authService,
-		userService: userService,
 	}
-	return serviceTest, func() {
+	menuResourceRepo := &repo.MenuResourceRepo{
+		DB: db,
+	}
+	roleRepo := &repo.RoleRepo{
+		DB: db,
+	}
+	casbinx := &admin.Casbinx{
+		Cache:            cacher,
+		MenuRepo:         menuRepo,
+		MenuResourceRepo: menuResourceRepo,
+		RoleRepo:         roleRepo,
+	}
+	adminHandler := &admin.AdminHandler{
+		AuthService: authService,
+		Casbinx:     casbinx,
+	}
+	rbacRouteV1 := &admin.RBACRouteV1{
+		LoginAPI: loginApi,
+		Handler:  adminHandler,
+	}
+	injector := &Injector{
+		RBACRouteV1: rbacRouteV1,
+	}
+	return injector, func() {
 		cleanup3()
 		cleanup2()
 		cleanup()

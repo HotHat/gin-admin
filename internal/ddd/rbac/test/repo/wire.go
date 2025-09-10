@@ -6,8 +6,8 @@ package repo
 import (
 	"context"
 
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/repo"
-	"github.com/LyricTian/gin-admin/v10/internal/wirex"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/repo"
+	"github.com/HotHat/gin-admin/v10/internal/wirex"
 	"github.com/google/wire"
 )
 

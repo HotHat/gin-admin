@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/LyricTian/gin-admin/v10/internal/config"
-	"github.com/LyricTian/gin-admin/v10/internal/mods/rbac/dal"
-	"github.com/LyricTian/gin-admin/v10/internal/mods/rbac/schema"
-	"github.com/LyricTian/gin-admin/v10/pkg/cachex"
-	"github.com/LyricTian/gin-admin/v10/pkg/errors"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
+	"github.com/HotHat/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/internal/mods/rbac/dal"
+	"github.com/HotHat/gin-admin/v10/internal/mods/rbac/schema"
+	"github.com/HotHat/gin-admin/v10/pkg/cachex"
+	"github.com/HotHat/gin-admin/v10/pkg/errors"
+	"github.com/HotHat/gin-admin/v10/pkg/util"
 )
 
 // Role management for RBAC

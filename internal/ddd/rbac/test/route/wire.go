@@ -1,19 +1,21 @@
 //go:build wireinject
 // +build wireinject
 
-package service
+package route
 
 import (
 	"context"
 
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/api"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/repo"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/service"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/route/admin"
 	"github.com/HotHat/gin-admin/v10/internal/wirex"
 	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"github.com/google/wire"
 )
 
-func BuildService(ctx context.Context) (*ServiceTest, func(), error) {
+func BuildRoute(ctx context.Context) (*RouteTest, func(), error) {
 	wire.Build(
 		wirex.InitDB,
 		wirex.InitCacher,
@@ -22,7 +24,11 @@ func BuildService(ctx context.Context) (*ServiceTest, func(), error) {
 		//entity.EntitySet,
 		repo.RepoSet,
 		service.ServiceSet,
-		wire.Struct(new(ServiceTest), "*"),
+		api.ApiSet,
+		wire.Struct(new(admin.Casbinx), "*"),
+		wire.Struct(new(admin.AdminHandler), "*"),
+		wire.Struct(new(admin.RBACRouteV1), "*"),
+		wire.Struct(new(RouteTest), "*"),
 	) // end
-	return &ServiceTest{}, nil, nil
+	return &RouteTest{}, nil, nil
 }

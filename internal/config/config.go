@@ -3,8 +3,8 @@ package config
 import (
 	"fmt"
 
-	"github.com/LyricTian/gin-admin/v10/pkg/encoding/json"
-	"github.com/LyricTian/gin-admin/v10/pkg/logging"
+	"github.com/HotHat/gin-admin/v10/pkg/encoding/json"
+	"github.com/HotHat/gin-admin/v10/pkg/logging"
 )
 
 type Config struct {

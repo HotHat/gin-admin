@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/LyricTian/gin-admin/v10/pkg/logging"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
+	"github.com/HotHat/gin-admin/v10/pkg/logging"
+	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )

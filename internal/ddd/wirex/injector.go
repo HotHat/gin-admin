@@ -5,19 +5,29 @@ import (
 	"time"
 
 	"github.com/HotHat/gin-admin/v10/internal/config"
-	"github.com/HotHat/gin-admin/v10/internal/mods"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/route/admin"
 	"github.com/HotHat/gin-admin/v10/pkg/cachex"
 	"github.com/HotHat/gin-admin/v10/pkg/gormx"
 	"github.com/HotHat/gin-admin/v10/pkg/jwtx"
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"gorm.io/gorm"
 )
 
 type Injector struct {
-	DB    *gorm.DB
-	Cache cachex.Cacher
-	Auth  jwtx.Auther
-	M     *mods.Mods
+	RBACRouteV1 *admin.RBACRouteV1
+}
+
+func (a *Injector) Register(ctx context.Context, gin *gin.Engine) {
+	a.RBACRouteV1.Register(ctx, gin)
+}
+
+func (a *Injector) Init(ctx context.Context, gin *gin.Engine) {
+
+}
+
+func (a *Injector) Release(ctx context.Context) error {
+	return a.RBACRouteV1.Release(ctx)
 }
 
 // It creates a new database connection, and returns a function that closes the connection

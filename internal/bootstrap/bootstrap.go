@@ -8,12 +8,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/LyricTian/gin-admin/v10/internal/config"
-	_ "github.com/LyricTian/gin-admin/v10/internal/swagger"
-	"github.com/LyricTian/gin-admin/v10/internal/utility/prom"
-	"github.com/LyricTian/gin-admin/v10/internal/wirex"
-	"github.com/LyricTian/gin-admin/v10/pkg/logging"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
+	"github.com/HotHat/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/wirex"
+	_ "github.com/HotHat/gin-admin/v10/internal/swagger"
+	"github.com/HotHat/gin-admin/v10/internal/utility/prom"
+	"github.com/HotHat/gin-admin/v10/pkg/logging"
+	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"go.uber.org/zap"
 )
 
@@ -74,9 +74,9 @@ func Run(ctx context.Context, runCfg RunConfig) error {
 		return err
 	}
 
-	if err := injector.M.Init(ctx); err != nil {
-		return err
-	}
+	//if err := injector.M.Init(ctx); err != nil {
+	//	return err
+	//}
 
 	// Initialize global prometheus metrics.
 	prom.Init()
@@ -88,7 +88,7 @@ func Run(ctx context.Context, runCfg RunConfig) error {
 		}
 
 		return func() {
-			if err := injector.M.Release(ctx); err != nil {
+			if err := injector.Release(ctx); err != nil {
 				logging.Context(ctx).Error("failed to release injector", zap.Error(err))
 			}
 

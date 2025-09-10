@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/LyricTian/gin-admin/v10/internal/mods/rbac/schema"
-	"github.com/LyricTian/gin-admin/v10/pkg/crypto/hash"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
+	"github.com/HotHat/gin-admin/v10/internal/mods/rbac/schema"
+	"github.com/HotHat/gin-admin/v10/pkg/crypto/hash"
+	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"github.com/stretchr/testify/assert"
 )
 

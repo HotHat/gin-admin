@@ -1,9 +1,11 @@
 package comm
 
 import (
+	"context"
+
 	"github.com/gin-gonic/gin"
 )
 
 type RouteRegister interface {
-	Register(gin *gin.Engine)
+	Register(ctx context.Context, gin *gin.Engine)
 }

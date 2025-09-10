@@ -1,7 +1,9 @@
 package admin
 
 import (
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/api"
+	"context"
+
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/api"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,8 +12,12 @@ type RBACRouteV1 struct {
 	Handler  *AdminHandler
 }
 
-func (a *RBACRouteV1) Register(g *gin.Engine) {
-	mds := a.Handler.getHandlers()
+func (a *RBACRouteV1) Release(ctx context.Context) error {
+	return a.Handler.Release(ctx)
+}
+
+func (a *RBACRouteV1) Register(ctx context.Context, g *gin.Engine) {
+	mds := a.Handler.GetHandlers()
 
 	v1 := g.Group("v2", mds...)
 

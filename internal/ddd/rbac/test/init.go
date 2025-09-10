@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/LyricTian/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/internal/config"
 )
 
 var TestContext context.Context

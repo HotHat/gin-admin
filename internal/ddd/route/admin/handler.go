@@ -1,11 +1,13 @@
 package admin
 
 import (
-	"github.com/LyricTian/gin-admin/v10/internal/config"
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/comm"
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/service"
-	"github.com/LyricTian/gin-admin/v10/pkg/middleware"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
+	"context"
+
+	"github.com/HotHat/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/comm"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/service"
+	"github.com/HotHat/gin-admin/v10/pkg/middleware"
+	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +17,11 @@ type AdminHandler struct {
 	Casbinx     *Casbinx
 }
 
-func (a *AdminHandler) getHandlers() []gin.HandlerFunc {
+func (a *AdminHandler) Release(ctx context.Context) error {
+	return a.Casbinx.Release(ctx)
+}
+
+func (a *AdminHandler) GetHandlers() []gin.HandlerFunc {
 	allowedPrefixes := []string{
 		"/api/",
 	}

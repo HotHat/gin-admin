@@ -3,10 +3,10 @@ package schema
 import (
 	"time"
 
-	"github.com/LyricTian/gin-admin/v10/internal/config"
-	"github.com/LyricTian/gin-admin/v10/pkg/crypto/hash"
-	"github.com/LyricTian/gin-admin/v10/pkg/errors"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
+	"github.com/HotHat/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/pkg/crypto/hash"
+	"github.com/HotHat/gin-admin/v10/pkg/errors"
+	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"github.com/go-playground/validator/v10"
 )
 

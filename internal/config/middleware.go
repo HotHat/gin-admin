@@ -34,6 +34,7 @@ type Middleware struct {
 	}
 	Auth struct {
 		Disable             bool
+		AllowedPrefixes     []string
 		SkippedPathPrefixes []string
 		SigningMethod       string `default:"HS512"`    // HS256/HS384/HS512
 		SigningKey          string `default:"XnEsT0S@"` // secret key

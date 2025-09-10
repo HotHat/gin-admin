@@ -1,9 +1,9 @@
 package prom
 
 import (
-	"github.com/LyricTian/gin-admin/v10/internal/config"
-	"github.com/LyricTian/gin-admin/v10/pkg/promx"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
+	"github.com/HotHat/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/pkg/promx"
+	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"github.com/gin-gonic/gin"
 )
 

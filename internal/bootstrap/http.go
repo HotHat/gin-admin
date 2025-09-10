@@ -8,14 +8,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/LyricTian/gin-admin/v10/internal/config"
-	"github.com/LyricTian/gin-admin/v10/internal/utility/prom"
-	"github.com/LyricTian/gin-admin/v10/internal/wirex"
-	"github.com/LyricTian/gin-admin/v10/pkg/errors"
-	"github.com/LyricTian/gin-admin/v10/pkg/logging"
-	"github.com/LyricTian/gin-admin/v10/pkg/middleware"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
-	"github.com/casbin/casbin/v2"
+	"github.com/HotHat/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/wirex"
+	"github.com/HotHat/gin-admin/v10/internal/utility/prom"
+	"github.com/HotHat/gin-admin/v10/pkg/errors"
+	"github.com/HotHat/gin-admin/v10/pkg/logging"
+	"github.com/HotHat/gin-admin/v10/pkg/middleware"
+	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -43,17 +42,15 @@ func startHTTPServer(ctx context.Context, injector *wirex.Injector) (func(), err
 		util.ResError(c, errors.NotFound("", "Not Found"))
 	})
 
-	allowedPrefixes := injector.M.RouterPrefixes()
+	//allowedPrefixes := injector.M.RouterPrefixes()
 
 	// Register middlewares
-	if err := useHTTPMiddlewares(ctx, e, injector, allowedPrefixes); err != nil {
+	if err := useHTTPMiddlewares(ctx, e, config.C.Middleware.Auth.AllowedPrefixes); err != nil {
 		return nil, err
 	}
 
 	// Register routers
-	if err := injector.M.RegisterRouters(ctx, e); err != nil {
-		return nil, err
-	}
+	injector.Register(ctx, e)
 
 	// Register swagger
 	if !config.C.General.DisableSwagger {
@@ -64,7 +61,7 @@ func startHTTPServer(ctx context.Context, injector *wirex.Injector) (func(), err
 	if dir := config.C.Middleware.Static.Dir; dir != "" {
 		e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 			Root:                dir,
-			SkippedPathPrefixes: allowedPrefixes,
+			SkippedPathPrefixes: config.C.Middleware.Auth.AllowedPrefixes,
 		}))
 	}
 
@@ -103,7 +100,7 @@ func startHTTPServer(ctx context.Context, injector *wirex.Injector) (func(), err
 	}, nil
 }
 
-func useHTTPMiddlewares(_ context.Context, e *gin.Engine, injector *wirex.Injector, allowedPrefixes []string) error {
+func useHTTPMiddlewares(_ context.Context, e *gin.Engine, allowedPrefixes []string) error {
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		Enable:                 config.C.Middleware.CORS.Enable,
 		AllowAllOrigins:        config.C.Middleware.CORS.AllowAllOrigins,
@@ -139,12 +136,12 @@ func useHTTPMiddlewares(_ context.Context, e *gin.Engine, injector *wirex.Inject
 		MaxContentLen:       config.C.Middleware.CopyBody.MaxContentLen,
 	}))
 
-	e.Use(middleware.AuthWithConfig(middleware.AuthConfig{
-		AllowedPathPrefixes: allowedPrefixes,
-		SkippedPathPrefixes: config.C.Middleware.Auth.SkippedPathPrefixes,
-		ParseUserID:         injector.M.RBAC.LoginAPI.LoginBIZ.ParseUserID,
-		RootID:              config.C.General.Root.ID,
-	}))
+	//e.Use(middleware.AuthWithConfig(middleware.AuthConfig{
+	//	AllowedPathPrefixes: allowedPrefixes,
+	//	SkippedPathPrefixes: config.C.Middleware.Auth.SkippedPathPrefixes,
+	//	ParseUserID:         injector.M.RBAC.LoginAPI.LoginBIZ.ParseUserID,
+	//	RootID:              config.C.General.Root.ID,
+	//}))
 
 	e.Use(middleware.RateLimiterWithConfig(middleware.RateLimiterConfig{
 		Enable:              config.C.Middleware.RateLimiter.Enable,
@@ -166,23 +163,23 @@ func useHTTPMiddlewares(_ context.Context, e *gin.Engine, injector *wirex.Inject
 		},
 	}))
 
-	e.Use(middleware.CasbinWithConfig(middleware.CasbinConfig{
-		AllowedPathPrefixes: allowedPrefixes,
-		SkippedPathPrefixes: config.C.Middleware.Casbin.SkippedPathPrefixes,
-		Skipper: func(c *gin.Context) bool {
-			if config.C.Middleware.Casbin.Disable ||
-				util.FromIsRootUser(c.Request.Context()) {
-				return true
-			}
-			return false
-		},
-		GetEnforcer: func(c *gin.Context) *casbin.Enforcer {
-			return injector.M.RBAC.Casbinx.GetEnforcer()
-		},
-		GetSubjects: func(c *gin.Context) []string {
-			return util.FromUserCache(c.Request.Context()).RoleIDs
-		},
-	}))
+	//e.Use(middleware.CasbinWithConfig(middleware.CasbinConfig{
+	//	AllowedPathPrefixes: allowedPrefixes,
+	//	SkippedPathPrefixes: config.C.Middleware.Casbin.SkippedPathPrefixes,
+	//	Skipper: func(c *gin.Context) bool {
+	//		if config.C.Middleware.Casbin.Disable ||
+	//			util.FromIsRootUser(c.Request.Context()) {
+	//			return true
+	//		}
+	//		return false
+	//	},
+	//	GetEnforcer: func(c *gin.Context) *casbin.Enforcer {
+	//		return injector.M.RBAC.Casbinx.GetEnforcer()
+	//	},
+	//	GetSubjects: func(c *gin.Context) []string {
+	//		return util.FromUserCache(c.Request.Context()).RoleIDs
+	//	},
+	//}))
 
 	if config.C.Util.Prometheus.Enable {
 		e.Use(prom.GinMiddleware)

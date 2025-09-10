@@ -1,9 +1,9 @@
 package api
 
 import (
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/dto"
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/service"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/dto"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/service"
+	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"github.com/gin-gonic/gin"
 )
 

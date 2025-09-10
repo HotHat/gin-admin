@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/dto"
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/entity"
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/test"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/dto"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/entity"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/test"
 )
 
 var serviceTest *ServiceTest

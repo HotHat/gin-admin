@@ -3,7 +3,7 @@ package entity
 import (
 	"time"
 
-	"github.com/LyricTian/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/internal/config"
 )
 
 // Logger management

@@ -4,15 +4,15 @@ import (
 	"context"
 	"time"
 
-	"github.com/LyricTian/gin-admin/v10/internal/config"
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/comm"
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/dto"
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/entity"
-	"github.com/LyricTian/gin-admin/v10/internal/ddd/rbac/repo"
-	"github.com/LyricTian/gin-admin/v10/pkg/cachex"
-	"github.com/LyricTian/gin-admin/v10/pkg/crypto/hash"
-	"github.com/LyricTian/gin-admin/v10/pkg/errors"
-	"github.com/LyricTian/gin-admin/v10/pkg/util"
+	"github.com/HotHat/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/comm"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/dto"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/entity"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/repo"
+	"github.com/HotHat/gin-admin/v10/pkg/cachex"
+	"github.com/HotHat/gin-admin/v10/pkg/crypto/hash"
+	"github.com/HotHat/gin-admin/v10/pkg/errors"
+	"github.com/HotHat/gin-admin/v10/pkg/util"
 )
 
 // UserService management for RBAC
