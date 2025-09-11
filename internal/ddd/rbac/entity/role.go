@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	RoleStatusEnabled  = "enabled"  // Enabled
-	RoleStatusDisabled = "disabled" // Disabled
+	RoleStatusEnabled  = 1 // Enabled
+	RoleStatusDisabled = 0 // Disabled
 
 	RoleResultTypeSelect = "select" // Select
 )
@@ -20,7 +20,7 @@ type Role struct {
 	Name        string    `json:"name" gorm:"size:128;index"`   // Display name of role
 	Description string    `json:"description" gorm:"size:1024"` // Details about role
 	Sequence    int       `json:"sequence" gorm:"index"`        // Sequence for sorting
-	Status      string    `json:"status" gorm:"size:20;index"`  // Status of role (disabled, enabled)
+	Status      int       `json:"status" gorm:"index"`          // Status of role (disabled, enabled)
 	CreatedAt   time.Time `json:"created_at" gorm:"index;"`     // Create time
 	UpdatedAt   time.Time `json:"updated_at" gorm:"index;"`     // Update time
 	Menus       RoleMenus `json:"menus" gorm:"-"`               // Role menu list

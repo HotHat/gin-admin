@@ -40,7 +40,7 @@ func (a *RoleRepo) Query(ctx context.Context, params dto.RoleQueryParam, opts ..
 	if v := params.LikeName; len(v) > 0 {
 		db = db.Where("name LIKE ?", "%"+v+"%")
 	}
-	if v := params.Status; len(v) > 0 {
+	if v := params.Status; v > -1 {
 		db = db.Where("status = ?", v)
 	}
 	if v := params.GtUpdatedAt; v != nil {

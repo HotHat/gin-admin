@@ -28,16 +28,16 @@ func (a *LoginForm) Trim() *LoginForm {
 
 // MenuForm Defining the data structure for creating a `Menu` struct.
 type MenuForm struct {
-	Code        string               `json:"code" binding:"required,max=32"`                   // Code of menu (unique for each level)
-	Name        string               `json:"name" binding:"required,max=128"`                  // Display name of menu
-	Description string               `json:"description"`                                      // Details about menu
-	Sequence    int                  `json:"sequence"`                                         // Sequence for sorting (Order by desc)
-	Type        string               `json:"type" binding:"required,oneof=page button"`        // Type of menu (page, button)
-	Path        string               `json:"path"`                                             // Access path of menu
-	Properties  string               `json:"properties"`                                       // Properties of menu (JSON)
-	Status      uint                 `json:"status" binding:"required,oneof=disabled enabled"` // Status of menu (enabled, disabled)
-	ParentID    comm.ID              `json:"parent_id"`                                        // Parent ID (From Menu.ID)
-	Resources   entity.MenuResources `json:"resources"`                                        // Resources of menu
+	Code        string               `json:"code" binding:"required,max=32"`            // Code of menu (unique for each level)
+	Name        string               `json:"name" binding:"required,max=128"`           // Display name of menu
+	Description string               `json:"description"`                               // Details about menu
+	Sequence    int                  `json:"sequence"`                                  // Sequence for sorting (Order by desc)
+	Type        string               `json:"type" binding:"required,oneof=page button"` // Type of menu (page, button)
+	Path        string               `json:"path"`                                      // Access path of menu
+	Properties  string               `json:"properties"`                                // Properties of menu (JSON)
+	Status      int                  `json:"status"`                                    // Status of menu (enabled, disabled)
+	ParentID    comm.ID              `json:"parent_id"`                                 // Parent ID (From Menu.ID)
+	Resources   entity.MenuResources `json:"resources"`                                 // Resources of menu
 }
 
 // Validate A validation function for the `MenuForm` struct.
@@ -69,7 +69,7 @@ type MenuQueryParam struct {
 	LikeName         string   `form:"name"`             // Display name of menu
 	IncludeResources bool     `form:"includeResources"` // Include resources
 	InIDs            []string `form:"-"`                // Include menu IDs
-	Status           uint     `form:"-"`                // Status of menu (disabled, enabled)
+	Status           int      `form:"-"`                // Status of menu (disabled, enabled)
 	ParentID         comm.ID  `form:"-"`                // Parent ID (From Menu.ID)
 	ParentPathPrefix string   `form:"-"`                // Parent path (split by .)
 	UserID           comm.ID  `form:"-"`                // User ID
@@ -121,11 +121,11 @@ func (a *MenuResourceForm) FillTo(menuResource *entity.MenuResource) error {
 // RoleQueryParam Defining the query parameters for the `Role` struct.
 type RoleQueryParam struct {
 	util.PaginationParam
-	LikeName    string     `form:"name"`                                       // Display name of role
-	Status      string     `form:"status" binding:"oneof=disabled enabled ''"` // Status of role (disabled, enabled)
-	ResultType  string     `form:"resultType"`                                 // Result type (options: select)
-	InIDs       []string   `form:"-"`                                          // ID list
-	GtUpdatedAt *time.Time `form:"-"`                                          // Update time is greater than
+	LikeName    string     `form:"name"`       // Display name of role
+	Status      int        `form:"status"`     // Status of role (disabled, enabled)
+	ResultType  string     `form:"resultType"` // Result type (options: select)
+	InIDs       []string   `form:"-"`          // ID list
+	GtUpdatedAt *time.Time `form:"-"`          // Update time is greater than
 }
 
 // RoleQueryOptions Defining the query options for the `Role` struct.
@@ -141,12 +141,12 @@ type RoleQueryResult struct {
 
 // RoleForm Defining the data structure for creating a `Role` struct.
 type RoleForm struct {
-	Code        string           `json:"code" binding:"required,max=32"`                   // Code of role (unique)
-	Name        string           `json:"name" binding:"required,max=128"`                  // Display name of role
-	Description string           `json:"description"`                                      // Details about role
-	Sequence    int              `json:"sequence"`                                         // Sequence for sorting
-	Status      string           `json:"status" binding:"required,oneof=disabled enabled"` // Status of role (enabled, disabled)
-	Menus       entity.RoleMenus `json:"menus"`                                            // Role menu list
+	Code        string           `json:"code" binding:"required,max=32"`      // Code of role (unique)
+	Name        string           `json:"name" binding:"required,max=128"`     // Display name of role
+	Description string           `json:"description"`                         // Details about role
+	Sequence    int              `json:"sequence"`                            // Sequence for sorting
+	Status      int              `json:"status" binding:"required,oneof=1 0"` // Status of role (enabled, disabled)
+	Menus       entity.RoleMenus `json:"menus"`                               // Role menu list
 }
 
 // Validate A validation function for the `RoleForm` struct.
@@ -166,9 +166,9 @@ func (a *RoleForm) FillTo(role *entity.Role) error {
 // UserQueryParam Defining the query parameters for the `User` struct.
 type UserQueryParam struct {
 	util.PaginationParam
-	LikeUsername string `form:"username"`                                    // Username for login
-	LikeName     string `form:"name"`                                        // Name of user
-	Status       int    `form:"status" binding:"oneof=activated freezed ''"` // Status of user (activated, freezed)
+	LikeUsername string `form:"username"` // Username for login
+	LikeName     string `form:"name"`     // Name of user
+	Status       int    `form:"status"`   // Status of user (activated, freezed)
 }
 
 // UserQueryOptions Defining the query options for the `User` struct.
