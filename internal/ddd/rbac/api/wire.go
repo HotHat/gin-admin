@@ -6,6 +6,8 @@ import (
 
 // ApiSet Collection of wire providers
 var ApiSet = wire.NewSet(
-	wire.Struct(new(LoginApi), "*"),
-	wire.Struct(new(UserApi), "*"),
+	wire.Struct(new(LoginAPI), "*"),
+	wire.Struct(new(UserAPI), "*"),
+	wire.Struct(new(MenuAPI), "*"),
+	wire.Struct(new(RoleAPI), "*"),
 )

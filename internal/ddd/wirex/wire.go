@@ -25,7 +25,8 @@ func BuildInjector(ctx context.Context) (*Injector, func(), error) {
 		rbacService.ServiceSet,
 		rbacApi.ApiSet,
 		wire.Struct(new(admin.Casbinx), "*"),
-		wire.Struct(new(admin.AdminHandler), "*"),
+		//wire.Struct(new(admin.AdminHandler), "*"),
+		admin.InitAdminHandler,
 		wire.Struct(new(admin.RBACRouteV1), "*"),
 		wire.Struct(new(Injector), "*"),
 	) // end

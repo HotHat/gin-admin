@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/HotHat/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/comm"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/dto"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/entity"
-	"github.com/HotHat/gin-admin/v10/internal/mods/rbac/schema"
 	"github.com/HotHat/gin-admin/v10/pkg/errors"
 	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"gorm.io/gorm"
@@ -42,21 +42,21 @@ func (a *MenuRepo) Query(ctx context.Context, params dto.MenuQueryParam, opts ..
 	if v := params.LikeName; len(v) > 0 {
 		db = db.Where("name LIKE ?", "%"+v+"%")
 	}
-	if v := params.Status; len(v) > 0 {
+	if v := params.Status; v > 0 {
 		db = db.Where("status = ?", v)
 	}
-	if v := params.ParentID; len(v) > 0 {
+	if v := params.ParentID; v > 0 {
 		db = db.Where("parent_id = ?", v)
 	}
 	if v := params.ParentPathPrefix; len(v) > 0 {
 		db = db.Where("parent_path LIKE ?", v+"%")
 	}
-	if v := params.UserID; len(v) > 0 {
+	if v := params.UserID; v > 0 {
 		userRoleQuery := GetUserRoleDB(ctx, a.DB).Where("user_id = ?", v).Select("role_id")
 		roleMenuQuery := GetRoleMenuDB(ctx, a.DB).Where("role_id IN (?)", userRoleQuery).Select("menu_id")
 		db = db.Where("id IN (?)", roleMenuQuery)
 	}
-	if v := params.RoleID; len(v) > 0 {
+	if v := params.RoleID; v > 0 {
 		roleMenuQuery := GetRoleMenuDB(ctx, a.DB).Where("role_id = ?", v).Select("menu_id")
 		db = db.Where("id IN (?)", roleMenuQuery)
 	}
@@ -75,7 +75,7 @@ func (a *MenuRepo) Query(ctx context.Context, params dto.MenuQueryParam, opts ..
 }
 
 // Get the specified menu from the database.
-func (a *MenuRepo) Get(ctx context.Context, id string, opts ...dto.MenuQueryOptions) (*entity.Menu, error) {
+func (a *MenuRepo) Get(ctx context.Context, id comm.ID, opts ...dto.MenuQueryOptions) (*entity.Menu, error) {
 	var opt dto.MenuQueryOptions
 	if len(opts) > 0 {
 		opt = opts[0]
@@ -91,7 +91,7 @@ func (a *MenuRepo) Get(ctx context.Context, id string, opts ...dto.MenuQueryOpti
 	return item, nil
 }
 
-func (a *MenuRepo) GetByCodeAndParentID(ctx context.Context, code, parentID string, opts ...dto.MenuQueryOptions) (*entity.Menu, error) {
+func (a *MenuRepo) GetByCodeAndParentID(ctx context.Context, code string, parentID comm.ID, opts ...dto.MenuQueryOptions) (*entity.Menu, error) {
 	var opt dto.MenuQueryOptions
 	if len(opts) > 0 {
 		opt = opts[0]
@@ -108,7 +108,7 @@ func (a *MenuRepo) GetByCodeAndParentID(ctx context.Context, code, parentID stri
 }
 
 // GetByNameAndParentID get the specified menu from the database.
-func (a *MenuRepo) GetByNameAndParentID(ctx context.Context, name, parentID string, opts ...dto.MenuQueryOptions) (*entity.Menu, error) {
+func (a *MenuRepo) GetByNameAndParentID(ctx context.Context, name string, parentID comm.ID, opts ...dto.MenuQueryOptions) (*entity.Menu, error) {
 	var opt dto.MenuQueryOptions
 	if len(opts) > 0 {
 		opt = opts[0]
@@ -131,43 +131,43 @@ func (a *MenuRepo) Exists(ctx context.Context, id string) (bool, error) {
 }
 
 // ExistsCodeByParentID Checks if a menu with the specified `code` exists under the specified `parentID` in the database.
-func (a *MenuRepo) ExistsCodeByParentID(ctx context.Context, code, parentID string) (bool, error) {
+func (a *MenuRepo) ExistsCodeByParentID(ctx context.Context, code string, parentID comm.ID) (bool, error) {
 	ok, err := util.Exists(ctx, GetMenuDB(ctx, a.DB).Where("code=? AND parent_id=?", code, parentID))
 	return ok, errors.WithStack(err)
 }
 
 // ExistsNameByParentID Checks if a menu with the specified `name` exists under the specified `parentID` in the database.
-func (a *MenuRepo) ExistsNameByParentID(ctx context.Context, name, parentID string) (bool, error) {
+func (a *MenuRepo) ExistsNameByParentID(ctx context.Context, name string, parentID comm.ID) (bool, error) {
 	ok, err := util.Exists(ctx, GetMenuDB(ctx, a.DB).Where("name=? AND parent_id=?", name, parentID))
 	return ok, errors.WithStack(err)
 }
 
 // Create a new menu.
-func (a *MenuRepo) Create(ctx context.Context, item *schema.Menu) error {
+func (a *MenuRepo) Create(ctx context.Context, item *entity.Menu) error {
 	result := GetMenuDB(ctx, a.DB).Create(item)
 	return errors.WithStack(result.Error)
 }
 
 // Update the specified menu in the database.
-func (a *MenuRepo) Update(ctx context.Context, item *schema.Menu) error {
+func (a *MenuRepo) Update(ctx context.Context, item *entity.Menu) error {
 	result := GetMenuDB(ctx, a.DB).Where("id=?", item.ID).Select("*").Omit("created_at").Updates(item)
 	return errors.WithStack(result.Error)
 }
 
 // Delete the specified menu from the database.
-func (a *MenuRepo) Delete(ctx context.Context, id string) error {
-	result := GetMenuDB(ctx, a.DB).Where("id=?", id).Delete(new(schema.Menu))
+func (a *MenuRepo) Delete(ctx context.Context, id comm.ID) error {
+	result := GetMenuDB(ctx, a.DB).Where("id=?", id).Delete(new(entity.Menu))
 	return errors.WithStack(result.Error)
 }
 
 // UpdateParentPath Updates the parent path of the specified menu.
-func (a *MenuRepo) UpdateParentPath(ctx context.Context, id, parentPath string) error {
+func (a *MenuRepo) UpdateParentPath(ctx context.Context, id comm.ID, parentPath string) error {
 	result := GetMenuDB(ctx, a.DB).Where("id=?", id).Update("parent_path", parentPath)
 	return errors.WithStack(result.Error)
 }
 
 // UpdateStatusByParentPath Updates the status of all menus whose parent path starts with the provided parent path.
-func (a *MenuRepo) UpdateStatusByParentPath(ctx context.Context, parentPath, status string) error {
+func (a *MenuRepo) UpdateStatusByParentPath(ctx context.Context, parentPath string, status uint) error {
 	result := GetMenuDB(ctx, a.DB).Where("parent_path like ?", parentPath+"%").Update("status", status)
 	return errors.WithStack(result.Error)
 }

@@ -35,7 +35,7 @@ type MenuForm struct {
 	Type        string               `json:"type" binding:"required,oneof=page button"`        // Type of menu (page, button)
 	Path        string               `json:"path"`                                             // Access path of menu
 	Properties  string               `json:"properties"`                                       // Properties of menu (JSON)
-	Status      string               `json:"status" binding:"required,oneof=disabled enabled"` // Status of menu (enabled, disabled)
+	Status      uint                 `json:"status" binding:"required,oneof=disabled enabled"` // Status of menu (enabled, disabled)
 	ParentID    comm.ID              `json:"parent_id"`                                        // Parent ID (From Menu.ID)
 	Resources   entity.MenuResources `json:"resources"`                                        // Resources of menu
 }
@@ -69,11 +69,11 @@ type MenuQueryParam struct {
 	LikeName         string   `form:"name"`             // Display name of menu
 	IncludeResources bool     `form:"includeResources"` // Include resources
 	InIDs            []string `form:"-"`                // Include menu IDs
-	Status           string   `form:"-"`                // Status of menu (disabled, enabled)
-	ParentID         string   `form:"-"`                // Parent ID (From Menu.ID)
+	Status           uint     `form:"-"`                // Status of menu (disabled, enabled)
+	ParentID         comm.ID  `form:"-"`                // Parent ID (From Menu.ID)
 	ParentPathPrefix string   `form:"-"`                // Parent path (split by .)
-	UserID           string   `form:"-"`                // User ID
-	RoleID           string   `form:"-"`                // Role ID
+	UserID           comm.ID  `form:"-"`                // User ID
+	RoleID           comm.ID  `form:"-"`                // Role ID
 }
 
 // MenuQueryOptions Defining the query options for the `Menu` struct.

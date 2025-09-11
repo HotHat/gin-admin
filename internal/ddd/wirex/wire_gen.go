@@ -39,10 +39,10 @@ func BuildInjector(ctx context.Context) (*Injector, func(), error) {
 	userRoleRepo := &repo.UserRoleRepo{
 		DB: db,
 	}
-	menuRepo := &repo.MenuRepo{
+	trans := &util.Trans{
 		DB: db,
 	}
-	trans := &util.Trans{
+	menuRepo := &repo.MenuRepo{
 		DB: db,
 	}
 	userService := &service.UserService{
@@ -50,17 +50,14 @@ func BuildInjector(ctx context.Context) (*Injector, func(), error) {
 		Trans:        trans,
 		UserRepo:     userRepo,
 		UserRoleRepo: userRoleRepo,
+		MenuRepo:     menuRepo,
 	}
 	authService := &service.AuthService{
 		Cache:        cacher,
 		Auth:         auther,
 		UserRepo:     userRepo,
 		UserRoleRepo: userRoleRepo,
-		MenuRepo:     menuRepo,
 		UserService:  userService,
-	}
-	loginApi := &api.LoginApi{
-		AuthService: authService,
 	}
 	menuResourceRepo := &repo.MenuResourceRepo{
 		DB: db,
@@ -74,18 +71,55 @@ func BuildInjector(ctx context.Context) (*Injector, func(), error) {
 		MenuResourceRepo: menuResourceRepo,
 		RoleRepo:         roleRepo,
 	}
-	adminHandler := &admin.AdminHandler{
+	adminHandler, cleanup4, err := admin.InitAdminHandler(ctx, authService, casbinx)
+	if err != nil {
+		cleanup3()
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	loginAPI := &api.LoginAPI{
 		AuthService: authService,
-		Casbinx:     casbinx,
+	}
+	userAPI := &api.UserAPI{
+		UserService: userService,
+		AuthService: authService,
+	}
+	roleMenuRepo := &repo.RoleMenuRepo{
+		DB: db,
+	}
+	menuService := &service.MenuService{
+		Cache:            cacher,
+		Trans:            trans,
+		MenuRepo:         menuRepo,
+		MenuResourceRepo: menuResourceRepo,
+		RoleMenuRepo:     roleMenuRepo,
+	}
+	menuAPI := &api.MenuAPI{
+		MenuService: menuService,
+	}
+	roleService := &service.RoleService{
+		Cache:        cacher,
+		Trans:        trans,
+		RoleRepo:     roleRepo,
+		RoleMenuRepo: roleMenuRepo,
+		UserRoleRepo: userRoleRepo,
+	}
+	roleAPI := &api.RoleAPI{
+		RoleService: roleService,
 	}
 	rbacRouteV1 := &admin.RBACRouteV1{
-		LoginAPI: loginApi,
 		Handler:  adminHandler,
+		LoginAPI: loginAPI,
+		UserAPI:  userAPI,
+		MenuAPI:  menuAPI,
+		RoleAPI:  roleAPI,
 	}
 	injector := &Injector{
 		RBACRouteV1: rbacRouteV1,
 	}
 	return injector, func() {
+		cleanup4()
 		cleanup3()
 		cleanup2()
 		cleanup()

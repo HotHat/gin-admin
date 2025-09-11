@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	MenuStatusDisabled = "disabled"
-	MenuStatusEnabled  = "enabled"
+	MenuStatusDisabled = 0
+	MenuStatusEnabled  = 1
 )
 
 var (
@@ -31,7 +31,7 @@ type Menu struct {
 	Type        string        `json:"type" gorm:"size:20;index"`          // Type of menu (page, button)
 	Path        string        `json:"path" gorm:"size:255;"`              // Access path of menu
 	Properties  string        `json:"properties" gorm:"type:text;"`       // Properties of menu (JSON)
-	Status      string        `json:"status" gorm:"size:20;index"`        // Status of menu (enabled, disabled)
+	Status      uint          `json:"status" gorm:"size:20;index"`        // Status of menu (enabled, disabled)
 	ParentID    comm.ID       `json:"parent_id" gorm:"index;"`            // Parent ID (From Menu.ID)
 	ParentPath  string        `json:"parent_path" gorm:"size:255;index;"` // Parent path (split by .)
 	Children    *Menus        `json:"children" gorm:"-"`                  // Child menus

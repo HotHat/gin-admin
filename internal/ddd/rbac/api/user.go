@@ -8,9 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// UserApi management for RBAC
-type UserApi struct {
+// UserAPI management for RBAC
+type UserAPI struct {
 	UserService *service.UserService
+	AuthService *service.AuthService
 }
 
 // @Tags UserAPI
@@ -25,7 +26,7 @@ type UserApi struct {
 // @Failure 401 {object} util.ResponseResult
 // @Failure 500 {object} util.ResponseResult
 // @Router /api/v1/users [get]
-func (a *UserApi) Query(c *gin.Context) {
+func (a *UserAPI) Query(c *gin.Context) {
 	ctx := c.Request.Context()
 	var params dto.UserQueryParam
 	if err := util.ParseQuery(c, &params); err != nil {
@@ -49,7 +50,7 @@ func (a *UserApi) Query(c *gin.Context) {
 // @Failure 401 {object} util.ResponseResult
 // @Failure 500 {object} util.ResponseResult
 // @Router /api/v1/users/{id} [get]
-func (a *UserApi) Get(c *gin.Context) {
+func (a *UserAPI) Get(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := comm.StrToID(c.Param("id"))
 	if err != nil {
@@ -72,7 +73,7 @@ func (a *UserApi) Get(c *gin.Context) {
 // @Failure 401 {object} util.ResponseResult
 // @Failure 500 {object} util.ResponseResult
 // @Router /api/v1/users [post]
-func (a *UserApi) Create(c *gin.Context) {
+func (a *UserAPI) Create(c *gin.Context) {
 	ctx := c.Request.Context()
 	item := new(dto.UserForm)
 	if err := util.ParseJSON(c, item); err != nil {
@@ -101,7 +102,7 @@ func (a *UserApi) Create(c *gin.Context) {
 // @Failure 401 {object} util.ResponseResult
 // @Failure 500 {object} util.ResponseResult
 // @Router /api/v1/users/{id} [put]
-func (a *UserApi) Update(c *gin.Context) {
+func (a *UserAPI) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 	item := new(dto.UserForm)
 	if err := util.ParseJSON(c, item); err != nil {
@@ -131,7 +132,7 @@ func (a *UserApi) Update(c *gin.Context) {
 // @Failure 401 {object} util.ResponseResult
 // @Failure 500 {object} util.ResponseResult
 // @Router /api/v1/users/{id} [delete]
-func (a *UserApi) Delete(c *gin.Context) {
+func (a *UserAPI) Delete(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := comm.StrToID(c.Param("id"))
 	if err != nil {
@@ -153,7 +154,7 @@ func (a *UserApi) Delete(c *gin.Context) {
 // @Failure 401 {object} util.ResponseResult
 // @Failure 500 {object} util.ResponseResult
 // @Router /api/v1/users/{id}/reset-pwd [patch]
-func (a *UserApi) ResetPassword(c *gin.Context) {
+func (a *UserAPI) ResetPassword(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := comm.StrToID(c.Param("id"))
 	if err != nil {
@@ -165,4 +166,121 @@ func (a *UserApi) ResetPassword(c *gin.Context) {
 		return
 	}
 	util.ResOK(c)
+}
+
+// @Tags LoginAPI
+// @Security ApiKeyAuth
+// @Summary Get current user info
+// @Success 200 {object} util.ResponseResult{data=schema.User}
+// @Failure 401 {object} util.ResponseResult
+// @Failure 500 {object} util.ResponseResult
+// @Router /api/v1/current/user [get]
+func (a *UserAPI) GetUserInfo(c *gin.Context) {
+	ctx := c.Request.Context()
+	data, err := a.UserService.GetUserInfo(ctx)
+	if err != nil {
+		util.ResError(c, err)
+		return
+	}
+	util.ResSuccess(c, data)
+}
+
+// @Tags LoginAPI
+// @Security ApiKeyAuth
+// @Summary Change current user password
+// @Param body body schema.UpdateLoginPassword true "Request body"
+// @Success 200 {object} util.ResponseResult
+// @Failure 400 {object} util.ResponseResult
+// @Failure 401 {object} util.ResponseResult
+// @Failure 500 {object} util.ResponseResult
+// @Router /api/v1/current/password [put]
+func (a *UserAPI) UpdatePassword(c *gin.Context) {
+	ctx := c.Request.Context()
+	item := new(dto.UpdateLoginPassword)
+	if err := util.ParseJSON(c, item); err != nil {
+		util.ResError(c, err)
+		return
+	}
+
+	err := a.UserService.UpdatePassword(ctx, item)
+	if err != nil {
+		util.ResError(c, err)
+		return
+	}
+	util.ResOK(c)
+}
+
+// @Tags LoginAPI
+// @Security ApiKeyAuth
+// @Summary Query current user menus based on the current user role
+// @Success 200 {object} util.ResponseResult{data=[]schema.Menu}
+// @Failure 401 {object} util.ResponseResult
+// @Failure 500 {object} util.ResponseResult
+// @Router /api/v1/current/menus [get]
+func (a *UserAPI) QueryMenus(c *gin.Context) {
+	ctx := c.Request.Context()
+	data, err := a.UserService.QueryMenus(ctx)
+	if err != nil {
+		util.ResError(c, err)
+		return
+	}
+	util.ResSuccess(c, data)
+}
+
+// @Tags LoginAPI
+// @Security ApiKeyAuth
+// @Summary Update current user info
+// @Param body body schema.UpdateCurrentUser true "Request body"
+// @Success 200 {object} util.ResponseResult
+// @Failure 400 {object} util.ResponseResult
+// @Failure 401 {object} util.ResponseResult
+// @Failure 500 {object} util.ResponseResult
+// @Router /api/v1/current/user [put]
+func (a *UserAPI) UpdateUser(c *gin.Context) {
+	ctx := c.Request.Context()
+	item := new(dto.UpdateCurrentUser)
+	if err := util.ParseJSON(c, item); err != nil {
+		util.ResError(c, err)
+		return
+	}
+
+	err := a.UserService.UpdateUser(ctx, item)
+	if err != nil {
+		util.ResError(c, err)
+		return
+	}
+	util.ResOK(c)
+}
+
+// @Tags LoginAPI
+// @Security ApiKeyAuth
+// @Summary Logout system
+// @Success 200 {object} util.ResponseResult
+// @Failure 500 {object} util.ResponseResult
+// @Router /api/v1/current/logout [post]
+func (a *UserAPI) Logout(c *gin.Context) {
+	ctx := c.Request.Context()
+	err := a.AuthService.Logout(ctx)
+	if err != nil {
+		util.ResError(c, err)
+		return
+	}
+	util.ResOK(c)
+}
+
+// @Tags LoginAPI
+// @Security ApiKeyAuth
+// @Summary Refresh current access token
+// @Success 200 {object} util.ResponseResult{data=schema.LoginToken}
+// @Failure 401 {object} util.ResponseResult
+// @Failure 500 {object} util.ResponseResult
+// @Router /api/v1/current/refresh-token [post]
+func (a *UserAPI) RefreshToken(c *gin.Context) {
+	ctx := c.Request.Context()
+	data, err := a.AuthService.RefreshToken(ctx)
+	if err != nil {
+		util.ResError(c, err)
+		return
+	}
+	util.ResSuccess(c, data)
 }

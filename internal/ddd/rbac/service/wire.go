@@ -8,4 +8,6 @@ import (
 var ServiceSet = wire.NewSet(
 	wire.Struct(new(UserService), "*"),
 	wire.Struct(new(AuthService), "*"),
+	wire.Struct(new(MenuService), "*"),
+	wire.Struct(new(RoleService), "*"),
 )

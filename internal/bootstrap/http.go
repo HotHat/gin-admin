@@ -50,7 +50,10 @@ func startHTTPServer(ctx context.Context, injector *wirex.Injector) (func(), err
 	}
 
 	// Register routers
-	injector.Register(ctx, e)
+	err := injector.Register(ctx, e)
+	if err != nil {
+		return nil, err
+	}
 
 	// Register swagger
 	if !config.C.General.DisableSwagger {

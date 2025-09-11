@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/HotHat/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/comm"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/dto"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/entity"
 	"github.com/HotHat/gin-admin/v10/pkg/errors"
@@ -60,7 +61,7 @@ func (a *RoleRepo) Query(ctx context.Context, params dto.RoleQueryParam, opts ..
 }
 
 // Get the specified role from the database.
-func (a *RoleRepo) Get(ctx context.Context, id int, opts ...dto.RoleQueryOptions) (*entity.Role, error) {
+func (a *RoleRepo) Get(ctx context.Context, id comm.ID, opts ...dto.RoleQueryOptions) (*entity.Role, error) {
 	var opt dto.RoleQueryOptions
 	if len(opts) > 0 {
 		opt = opts[0]
@@ -77,7 +78,7 @@ func (a *RoleRepo) Get(ctx context.Context, id int, opts ...dto.RoleQueryOptions
 }
 
 // Exist checks if the specified role exists in the database.
-func (a *RoleRepo) Exists(ctx context.Context, id int) (bool, error) {
+func (a *RoleRepo) Exists(ctx context.Context, id comm.ID) (bool, error) {
 	ok, err := util.Exists(ctx, GetRoleDB(ctx, a.DB).Where("id=?", id))
 	return ok, errors.WithStack(err)
 }
@@ -100,7 +101,7 @@ func (a *RoleRepo) Update(ctx context.Context, item *entity.Role) error {
 }
 
 // Delete the specified role from the database.
-func (a *RoleRepo) Delete(ctx context.Context, id int) error {
+func (a *RoleRepo) Delete(ctx context.Context, id comm.ID) error {
 	result := GetRoleDB(ctx, a.DB).Where("id=?", id).Delete(new(entity.Role))
 	return errors.WithStack(result.Error)
 }

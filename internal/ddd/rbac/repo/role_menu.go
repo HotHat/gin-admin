@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/HotHat/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/comm"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/dto"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/entity"
 	"github.com/HotHat/gin-admin/v10/pkg/errors"
@@ -86,19 +87,19 @@ func (a *RoleMenuRepo) Update(ctx context.Context, item *entity.RoleMenu) error 
 }
 
 // Delete the specified role menu from the database.
-func (a *RoleMenuRepo) Delete(ctx context.Context, id int) error {
+func (a *RoleMenuRepo) Delete(ctx context.Context, id comm.ID) error {
 	result := GetRoleMenuDB(ctx, a.DB).Where("id=?", id).Delete(new(entity.RoleMenu))
 	return errors.WithStack(result.Error)
 }
 
 // Deletes role menus by role id.
-func (a *RoleMenuRepo) DeleteByRoleID(ctx context.Context, roleID int) error {
+func (a *RoleMenuRepo) DeleteByRoleID(ctx context.Context, roleID comm.ID) error {
 	result := GetRoleMenuDB(ctx, a.DB).Where("role_id=?", roleID).Delete(new(entity.RoleMenu))
 	return errors.WithStack(result.Error)
 }
 
 // Deletes role menus by menu id.
-func (a *RoleMenuRepo) DeleteByMenuID(ctx context.Context, menuID int) error {
+func (a *RoleMenuRepo) DeleteByMenuID(ctx context.Context, menuID comm.ID) error {
 	result := GetRoleMenuDB(ctx, a.DB).Where("menu_id=?", menuID).Delete(new(entity.RoleMenu))
 	return errors.WithStack(result.Error)
 }

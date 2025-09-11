@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/HotHat/gin-admin/v10/internal/config"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/comm"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/dto"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/entity"
 	"github.com/HotHat/gin-admin/v10/internal/mods/rbac/schema"
@@ -72,13 +73,13 @@ func (a *MenuResourceRepo) Get(ctx context.Context, id string, opts ...dto.MenuR
 }
 
 // Exist checks if the specified menu resource exists in the database.
-func (a *MenuResourceRepo) Exists(ctx context.Context, id string) (bool, error) {
+func (a *MenuResourceRepo) Exists(ctx context.Context, id comm.ID) (bool, error) {
 	ok, err := util.Exists(ctx, GetMenuResourceDB(ctx, a.DB).Where("id=?", id))
 	return ok, errors.WithStack(err)
 }
 
 // ExistsMethodPathByMenuID checks if the specified menu resource exists in the database.
-func (a *MenuResourceRepo) ExistsMethodPathByMenuID(ctx context.Context, method, path, menuID string) (bool, error) {
+func (a *MenuResourceRepo) ExistsMethodPathByMenuID(ctx context.Context, method, path string, menuID comm.ID) (bool, error) {
 	ok, err := util.Exists(ctx, GetMenuResourceDB(ctx, a.DB).Where("method=? AND path=? AND menu_id=?", method, path, menuID))
 	return ok, errors.WithStack(err)
 }
@@ -96,13 +97,13 @@ func (a *MenuResourceRepo) Update(ctx context.Context, item *entity.MenuResource
 }
 
 // Delete the specified menu resource from the database.
-func (a *MenuResourceRepo) Delete(ctx context.Context, id string) error {
+func (a *MenuResourceRepo) Delete(ctx context.Context, id comm.ID) error {
 	result := GetMenuResourceDB(ctx, a.DB).Where("id=?", id).Delete(new(schema.MenuResource))
 	return errors.WithStack(result.Error)
 }
 
 // DeleteByMenuID Deletes the menu resource by menu id.
-func (a *MenuResourceRepo) DeleteByMenuID(ctx context.Context, menuID int) error {
+func (a *MenuResourceRepo) DeleteByMenuID(ctx context.Context, menuID comm.ID) error {
 	result := GetMenuResourceDB(ctx, a.DB).Where("menu_id=?", menuID).Delete(new(entity.MenuResource))
 	return errors.WithStack(result.Error)
 }

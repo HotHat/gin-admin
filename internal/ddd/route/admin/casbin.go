@@ -17,7 +17,6 @@ import (
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/dto"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/entity"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/repo"
-	"github.com/HotHat/gin-admin/v10/internal/mods/rbac/schema"
 	"github.com/HotHat/gin-admin/v10/pkg/cachex"
 	"github.com/HotHat/gin-admin/v10/pkg/logging"
 	"github.com/HotHat/gin-admin/v10/pkg/util"
@@ -98,7 +97,7 @@ func (a *Casbinx) load(ctx context.Context) error {
 	}
 
 	for _, item := range roleResult.Data {
-		resources, err := a.queryRoleResources(ctx, comm.IDToStr(item.ID))
+		resources, err := a.queryRoleResources(ctx, item.ID)
 		if err != nil {
 			logging.Context(ctx).Error("Failed to query role resources", zap.Error(err))
 			continue
@@ -142,10 +141,10 @@ func (a *Casbinx) load(ctx context.Context) error {
 	return nil
 }
 
-func (a *Casbinx) queryRoleResources(ctx context.Context, roleID string) (entity.MenuResources, error) {
+func (a *Casbinx) queryRoleResources(ctx context.Context, roleID comm.ID) (entity.MenuResources, error) {
 	menuResult, err := a.MenuRepo.Query(ctx, dto.MenuQueryParam{
 		RoleID: roleID,
-		Status: schema.MenuStatusEnabled,
+		Status: entity.MenuStatusEnabled,
 	}, dto.MenuQueryOptions{
 		QueryOptions: util.QueryOptions{
 			SelectFields: []string{"id", "parent_id", "parent_path"},

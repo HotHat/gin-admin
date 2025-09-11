@@ -17,6 +17,29 @@ type AdminHandler struct {
 	Casbinx     *Casbinx
 }
 
+func InitAdminHandler(ctx context.Context, authService *service.AuthService, cabin *Casbinx) (*AdminHandler, func(), error) {
+	handler := &AdminHandler{
+		AuthService: authService,
+		Casbinx:     cabin,
+	}
+
+	err := handler.Register(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return handler, func() {
+		err := handler.Release(ctx)
+		if err != nil {
+			return
+		}
+	}, nil
+}
+
+func (a *AdminHandler) Register(ctx context.Context) error {
+	return a.Casbinx.Load(ctx)
+}
+
 func (a *AdminHandler) Release(ctx context.Context) error {
 	return a.Casbinx.Release(ctx)
 }

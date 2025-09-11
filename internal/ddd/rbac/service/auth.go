@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"sort"
 	"time"
 
 	"github.com/HotHat/gin-admin/v10/internal/config"
@@ -12,7 +11,6 @@ import (
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/dto"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/entity"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/repo"
-	"github.com/HotHat/gin-admin/v10/internal/mods/rbac/schema"
 	"github.com/HotHat/gin-admin/v10/pkg/cachex"
 	"github.com/HotHat/gin-admin/v10/pkg/crypto/hash"
 	resp "github.com/HotHat/gin-admin/v10/pkg/errors"
@@ -31,7 +29,6 @@ type AuthService struct {
 	Auth         jwtx.Auther
 	UserRepo     *repo.UserRepo
 	UserRoleRepo *repo.UserRoleRepo
-	MenuRepo     *repo.MenuRepo
 	UserService  *UserService
 }
 
@@ -272,151 +269,4 @@ func (a *AuthService) Logout(ctx context.Context) error {
 	logging.Context(ctx).Info("Logout success")
 
 	return nil
-}
-
-// GetUserInfo Get user info
-func (a *AuthService) GetUserInfo(ctx context.Context) (*entity.User, error) {
-	if util.FromIsRootUser(ctx) {
-		userID, err := comm.StrToID(config.C.General.Root.ID)
-		if err != nil {
-			return nil, err
-		}
-		return &entity.User{
-			ID:       userID,
-			Username: config.C.General.Root.Username,
-			Name:     config.C.General.Root.Name,
-			Status:   entity.UserStatusActivated,
-		}, nil
-	}
-
-	userIDStr := util.FromUserID(ctx)
-	userID, err := comm.StrToID(userIDStr)
-	if err != nil {
-		return nil, err
-	}
-	user, err := a.UserRepo.Get(ctx, userID, dto.UserQueryOptions{
-		QueryOptions: util.QueryOptions{
-			OmitFields: []string{"password"},
-		},
-	})
-	if err != nil {
-		return nil, err
-	} else if user == nil {
-		return nil, resp.NotFound("", "UserService not found")
-	}
-
-	userRoleResult, err := a.UserRoleRepo.Query(ctx, dto.UserRoleQueryParam{
-		UserID: userID,
-	}, dto.UserRoleQueryOptions{
-		JoinRole: true,
-	})
-	if err != nil {
-		return nil, err
-	}
-	user.Roles = userRoleResult.Data
-
-	return user, nil
-}
-
-// UpdatePassword Change login password
-func (a *AuthService) UpdatePassword(ctx context.Context, updateItem *dto.UpdateLoginPassword) error {
-	if util.FromIsRootUser(ctx) {
-		return resp.BadRequest("", "Root user cannot change password")
-	}
-
-	userIDStr := util.FromUserID(ctx)
-	userID, err := comm.StrToID(userIDStr)
-	user, err := a.UserRepo.Get(ctx, userID, dto.UserQueryOptions{
-		QueryOptions: util.QueryOptions{
-			SelectFields: []string{"password"},
-		},
-	})
-	if err != nil {
-		return err
-	} else if user == nil {
-		return resp.NotFound("", "UserService not found")
-	}
-
-	// check old password
-	if err := hash.CompareHashAndPassword(user.Password, updateItem.OldPassword); err != nil {
-		return resp.BadRequest("", "Incorrect old password")
-	}
-
-	// update password
-	newPassword, err := hash.GeneratePassword(updateItem.NewPassword)
-	if err != nil {
-		return err
-	}
-	return a.UserRepo.UpdatePasswordByID(ctx, userID, newPassword)
-}
-
-// QueryMenus Query menus based on user permissions
-func (a *AuthService) QueryMenus(ctx context.Context) (entity.Menus, error) {
-	menuQueryParams := dto.MenuQueryParam{
-		Status: entity.MenuStatusEnabled,
-	}
-
-	isRoot := util.FromIsRootUser(ctx)
-	if !isRoot {
-		menuQueryParams.UserID = util.FromUserID(ctx)
-	}
-	menuResult, err := a.MenuRepo.Query(ctx, menuQueryParams, dto.MenuQueryOptions{
-		QueryOptions: util.QueryOptions{
-			OrderFields: schema.MenusOrderParams,
-		},
-	})
-	if err != nil {
-		return nil, err
-	} else if isRoot {
-		return menuResult.Data.ToTree(), nil
-	}
-
-	// fill parent menus
-	if parentIDs := menuResult.Data.SplitParentIDs(); len(parentIDs) > 0 {
-		var missMenusIDs []comm.ID
-		menuIDMapper := menuResult.Data.ToMap()
-		for _, parentID := range parentIDs {
-			if _, ok := menuIDMapper[parentID]; !ok {
-				missMenusIDs = append(missMenusIDs, parentID)
-			}
-		}
-		if len(missMenusIDs) > 0 {
-			parentResult, err := a.MenuRepo.Query(ctx, dto.MenuQueryParam{
-				InIDs: comm.IDArrToStr(missMenusIDs),
-			})
-			if err != nil {
-				return nil, err
-			}
-			menuResult.Data = append(menuResult.Data, parentResult.Data...)
-			sort.Sort(menuResult.Data)
-		}
-	}
-
-	return menuResult.Data.ToTree(), nil
-}
-
-// UpdateUser Update current user info
-func (a *AuthService) UpdateUser(ctx context.Context, updateItem *dto.UpdateCurrentUser) error {
-	if util.FromIsRootUser(ctx) {
-		return resp.BadRequest("", "Root user cannot update")
-	}
-
-	userIDStr := util.FromUserID(ctx)
-	userID, err := comm.StrToID(userIDStr)
-	if err != nil {
-		return err
-	}
-
-	user, err := a.UserRepo.Get(ctx, userID)
-	if err != nil {
-		return err
-	} else if user == nil {
-		return resp.NotFound("", "UserService not found")
-	}
-
-	user.Name = updateItem.Name
-	user.Phone = updateItem.Phone
-	user.Email = updateItem.Email
-	user.Remark = updateItem.Remark
-	return a.UserRepo.Update(ctx, user, "name", "phone", "email", "remark")
 }

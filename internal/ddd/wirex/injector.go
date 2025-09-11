@@ -18,8 +18,12 @@ type Injector struct {
 	RBACRouteV1 *admin.RBACRouteV1
 }
 
-func (a *Injector) Register(ctx context.Context, gin *gin.Engine) {
-	a.RBACRouteV1.Register(ctx, gin)
+func (a *Injector) Register(ctx context.Context, gin *gin.Engine) error {
+	err := a.RBACRouteV1.Register(ctx, gin)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *Injector) Init(ctx context.Context, gin *gin.Engine) {
