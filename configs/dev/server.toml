@@ -37,7 +37,7 @@ CleanupInterval = 60
 Path = "data/cache"
 
 [Storage.Cache.Redis]
-Addr = "127.0.0.1:6379"
+Addr = "172.22.5.121:6379"
 Username = ""
 Password = ""
 DB = 1
@@ -56,7 +56,7 @@ MaxIdleTime = 3600
 MaxOpenConns = 100
 MaxIdleConns = 50
 TablePrefix = ""
-AutoMigrate = false
+AutoMigrate = true
 
 [Util]
 
@@ -64,10 +64,10 @@ AutoMigrate = false
 Length = 4
 Width = 400
 Height = 160
-CacheType = "memory" # memory/redis
+CacheType = "redis" # memory/redis
 
 [Util.Captcha.Redis]
-Addr = "" # If empty, then use the same configuration as Storage.Cache.Redis
+Addr = "172.22.5.121:6379" # If empty, then use the same configuration as Storage.Cache.Redis
 Username = ""
 Password = ""
 DB = 1

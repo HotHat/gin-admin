@@ -19,7 +19,7 @@ func (a *RBACRouteV1) Release(ctx context.Context) error {
 func (a *RBACRouteV1) Register(ctx context.Context, g *gin.Engine) {
 	mds := a.Handler.GetHandlers()
 
-	v1 := g.Group("v2", mds...)
+	v1 := g.Group(baseAPI+"v1", mds...)
 
 	captcha := v1.Group("captcha")
 	{

@@ -20,7 +20,9 @@ import (
 	"github.com/HotHat/gin-admin/v10/pkg/logging"
 	"github.com/HotHat/gin-admin/v10/pkg/util"
 	"github.com/LyricTian/captcha"
+	"github.com/LyricTian/captcha/store"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
 )
 
@@ -104,9 +106,22 @@ func (a *AuthService) ParseUserID(c *gin.Context) (comm.ID, error) {
 	return userID, nil
 }
 
+func (a *AuthService) setStore(c context.Context) {
+	redisStore := store.NewRedisStore(&redis.Options{
+		Addr:     config.C.Util.Captcha.Redis.Addr,
+		Username: config.C.Util.Captcha.Redis.Username,
+		Password: config.C.Util.Captcha.Redis.Password,
+		DB:       config.C.Util.Captcha.Redis.DB,
+	}, 10*time.Minute, nil, config.C.Util.Captcha.Redis.KeyPrefix)
+
+	captcha.SetCustomStore(redisStore)
+}
+
 // GetCaptcha This function generates a new captcha ID and returns it as a `schema.Captcha` struct. The length of
 // the captcha is determined by the `config.C.Util.Captcha.Length` configuration value.
 func (a *AuthService) GetCaptcha(ctx context.Context) (*dto.Captcha, error) {
+	a.setStore(ctx)
+
 	return &dto.Captcha{
 		CaptchaID: captcha.NewLen(config.C.Util.Captcha.Length),
 	}, nil
@@ -114,13 +129,15 @@ func (a *AuthService) GetCaptcha(ctx context.Context) (*dto.Captcha, error) {
 
 // ResponseCaptcha Response captcha image
 func (a *AuthService) ResponseCaptcha(ctx context.Context, w http.ResponseWriter, id string, reload bool) error {
+	a.setStore(ctx)
+
 	if reload && !captcha.Reload(id) {
 		return resp.NotFound("", "Captcha id not found")
 	}
 
 	err := captcha.WriteImage(w, id, config.C.Util.Captcha.Width, config.C.Util.Captcha.Height)
 	if err != nil {
-		if err == captcha.ErrNotFound {
+		if errors.Is(err, captcha.ErrNotFound) {
 			return resp.NotFound("", "Captcha id not found")
 		}
 		return err

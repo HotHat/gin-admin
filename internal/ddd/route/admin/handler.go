@@ -22,9 +22,7 @@ func (a *AdminHandler) Release(ctx context.Context) error {
 }
 
 func (a *AdminHandler) GetHandlers() []gin.HandlerFunc {
-	allowedPrefixes := []string{
-		"/api/",
-	}
+	allowedPrefixes := config.C.Middleware.Auth.AllowedPrefixes
 	return []gin.HandlerFunc{
 		middleware.CasbinWithConfig(middleware.CasbinConfig{
 			AllowedPathPrefixes: allowedPrefixes,
