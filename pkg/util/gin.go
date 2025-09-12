@@ -86,10 +86,21 @@ func ResSuccess(c *gin.Context, v interface{}) {
 	})
 }
 
+func RespSuccess(c *gin.Context, v interface{}) {
+	if v == nil {
+		v = struct{}{}
+	}
+	ResJSON(c, http.StatusOK, v)
+}
+
 func ResOK(c *gin.Context) {
 	ResJSON(c, http.StatusOK, ResponseResult{
 		Success: true,
 	})
+}
+
+func RespOK(c *gin.Context) {
+	RespSuccess(c, nil)
 }
 
 func ResPage(c *gin.Context, v interface{}, pr *PaginationResult) {
@@ -107,6 +118,19 @@ func ResPage(c *gin.Context, v interface{}, pr *PaginationResult) {
 		Success: true,
 		Data:    v,
 		Total:   total,
+	})
+}
+
+func RespPage(c *gin.Context, v interface{}, pr *PaginationResult) {
+
+	reflectValue := reflect.Indirect(reflect.ValueOf(v))
+	if reflectValue.IsNil() {
+		v = make([]interface{}, 0)
+	}
+
+	ResJSON(c, http.StatusOK, ResponseSuccess{
+		Data:             v,
+		PaginationResult: pr,
 	})
 }
 
@@ -133,4 +157,25 @@ func ResError(c *gin.Context, err error, status ...int) {
 
 	//ierr.Code = int32(code)
 	ResJSON(c, code, ResponseResult{Error: ierr})
+}
+
+func RespError(c *gin.Context, err error, status ...int) {
+	var ierr *errors.Error
+	if e, ok := errors.As(err); ok {
+		ierr = e
+	} else {
+		ierr = errors.FromError(errors.InternalServerError("", err.Error()))
+	}
+
+	code := int(ierr.Status)
+	if code >= 500 {
+		ctx := c.Request.Context()
+		ctx = logging.NewTag(ctx, logging.TagKeySystem)
+		ctx = logging.NewStack(ctx, fmt.Sprintf("%+v", err))
+		logging.Context(ctx).Error("Internal server error", zap.Error(err))
+		//ierr.Detail = http.StatusText(http.StatusInternalServerError)
+	}
+
+	//ierr.Code = int32(code)
+	ResJSON(c, code, ierr)
 }

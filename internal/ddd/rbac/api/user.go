@@ -30,16 +30,16 @@ func (a *UserAPI) Query(c *gin.Context) {
 	ctx := c.Request.Context()
 	var params dto.UserQueryParam
 	if err := util.ParseQuery(c, &params); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
 
 	result, err := a.UserService.Query(ctx, params)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResPage(c, result.Data, result.PageResult)
+	util.RespPage(c, result.Data, result.PageResult)
 }
 
 // @Tags UserAPI
@@ -54,14 +54,14 @@ func (a *UserAPI) Get(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := comm.StrToID(c.Param("id"))
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 	}
 	item, err := a.UserService.Get(ctx, id)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResSuccess(c, item)
+	util.RespSuccess(c, item)
 }
 
 // @Tags UserAPI
@@ -77,19 +77,19 @@ func (a *UserAPI) Create(c *gin.Context) {
 	ctx := c.Request.Context()
 	item := new(dto.UserForm)
 	if err := util.ParseJSON(c, item); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	} else if err := item.Validate(); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
 
 	result, err := a.UserService.Create(ctx, item)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResSuccess(c, result)
+	util.RespSuccess(c, result)
 }
 
 // @Tags UserAPI
@@ -106,22 +106,22 @@ func (a *UserAPI) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 	item := new(dto.UserForm)
 	if err := util.ParseJSON(c, item); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	} else if err := item.Validate(); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
 	id, err := comm.StrToID(c.Param("id"))
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 	}
 	err = a.UserService.Update(ctx, id, item)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResOK(c)
+	util.RespOK(c)
 }
 
 // @Tags UserAPI
@@ -136,14 +136,14 @@ func (a *UserAPI) Delete(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := comm.StrToID(c.Param("id"))
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 	}
 	err = a.UserService.Delete(ctx, id)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResOK(c)
+	util.RespOK(c)
 }
 
 // @Tags UserAPI
@@ -158,14 +158,14 @@ func (a *UserAPI) ResetPassword(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := comm.StrToID(c.Param("id"))
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 	}
 	err = a.UserService.ResetPassword(ctx, id)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResOK(c)
+	util.RespOK(c)
 }
 
 // @Tags LoginAPI
@@ -179,10 +179,10 @@ func (a *UserAPI) GetUserInfo(c *gin.Context) {
 	ctx := c.Request.Context()
 	data, err := a.UserService.GetUserInfo(ctx)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResSuccess(c, data)
+	util.RespSuccess(c, data)
 }
 
 // @Tags LoginAPI
@@ -198,16 +198,16 @@ func (a *UserAPI) UpdatePassword(c *gin.Context) {
 	ctx := c.Request.Context()
 	item := new(dto.UpdateLoginPassword)
 	if err := util.ParseJSON(c, item); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
 
 	err := a.UserService.UpdatePassword(ctx, item)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResOK(c)
+	util.RespOK(c)
 }
 
 // @Tags LoginAPI
@@ -221,10 +221,10 @@ func (a *UserAPI) QueryMenus(c *gin.Context) {
 	ctx := c.Request.Context()
 	data, err := a.UserService.QueryMenus(ctx)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResSuccess(c, data)
+	util.RespSuccess(c, data)
 }
 
 // @Tags LoginAPI
@@ -240,16 +240,16 @@ func (a *UserAPI) UpdateUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	item := new(dto.UpdateCurrentUser)
 	if err := util.ParseJSON(c, item); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
 
 	err := a.UserService.UpdateUser(ctx, item)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResOK(c)
+	util.RespOK(c)
 }
 
 // @Tags LoginAPI
@@ -262,10 +262,10 @@ func (a *UserAPI) Logout(c *gin.Context) {
 	ctx := c.Request.Context()
 	err := a.AuthService.Logout(ctx)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResOK(c)
+	util.RespOK(c)
 }
 
 // @Tags LoginAPI
@@ -279,8 +279,8 @@ func (a *UserAPI) RefreshToken(c *gin.Context) {
 	ctx := c.Request.Context()
 	data, err := a.AuthService.RefreshToken(ctx)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResSuccess(c, data)
+	util.RespSuccess(c, data)
 }

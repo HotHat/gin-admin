@@ -28,19 +28,19 @@ func CasbinWithConfig(config CasbinConfig) gin.HandlerFunc {
 
 		enforcer := config.GetEnforcer(c)
 		if enforcer == nil {
-			util.ResError(c, ErrCasbinDenied)
+			util.RespError(c, ErrCasbinDenied)
 			return
 		}
 
 		for _, sub := range config.GetSubjects(c) {
 			if b, err := enforcer.Enforce(sub, c.Request.URL.Path, c.Request.Method); err != nil {
-				util.ResError(c, err)
+				util.RespError(c, err)
 				return
 			} else if b {
 				c.Next()
 				return
 			}
 		}
-		util.ResError(c, ErrCasbinDenied)
+		util.RespError(c, ErrCasbinDenied)
 	}
 }

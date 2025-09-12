@@ -61,11 +61,11 @@ func RateLimiterWithConfig(config RateLimiterConfig) gin.HandlerFunc {
 
 		if err != nil {
 			logging.Context(ctx).Error("Rate limiter middleware error", zap.Error(err))
-			util.ResError(c, errors.InternalServerError("", "Internal server error, please try again later."))
+			util.RespError(c, errors.InternalServerError("", "Internal server error, please try again later."))
 		} else if allowed {
 			c.Next()
 		} else {
-			util.ResError(c, errors.TooManyRequests("", "Too many requests, please try again later."))
+			util.RespError(c, errors.TooManyRequests("", "Too many requests, please try again later."))
 		}
 	}
 }

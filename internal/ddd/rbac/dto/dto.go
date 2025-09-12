@@ -35,7 +35,7 @@ type MenuForm struct {
 	Type        string               `json:"type" binding:"required,oneof=page button"` // Type of menu (page, button)
 	Path        string               `json:"path"`                                      // Access path of menu
 	Properties  string               `json:"properties"`                                // Properties of menu (JSON)
-	Status      int                  `json:"status"`                                    // Status of menu (enabled, disabled)
+	Status      int                  `json:"status" default:"-1"`                       // Status of menu (enabled, disabled)
 	ParentID    comm.ID              `json:"parent_id"`                                 // Parent ID (From Menu.ID)
 	Resources   entity.MenuResources `json:"resources"`                                 // Resources of menu
 }
@@ -69,7 +69,7 @@ type MenuQueryParam struct {
 	LikeName         string   `form:"name"`             // Display name of menu
 	IncludeResources bool     `form:"includeResources"` // Include resources
 	InIDs            []string `form:"-"`                // Include menu IDs
-	Status           int      `form:"-"`                // Status of menu (disabled, enabled)
+	Status           int      `form:"-" default:"-1"`   // Status of menu (disabled, enabled)
 	ParentID         comm.ID  `form:"-"`                // Parent ID (From Menu.ID)
 	ParentPathPrefix string   `form:"-"`                // Parent path (split by .)
 	UserID           comm.ID  `form:"-"`                // User ID

@@ -25,7 +25,7 @@ func AuthWithConfig(config AuthConfig) gin.HandlerFunc {
 
 		userID, err := config.ParseUserID(c)
 		if err != nil {
-			util.ResError(c, err)
+			util.RespError(c, err)
 			return
 		}
 

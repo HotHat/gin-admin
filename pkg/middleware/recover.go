@@ -50,7 +50,7 @@ func RecoveryWithConfig(config RecoveryConfig) gin.HandlerFunc {
 				}
 
 				logging.Context(ctx).Error(fmt.Sprintf("[Recovery] %s panic recovered", time.Now().Format("2006/01/02 - 15:04:05")), fields...)
-				util.ResError(c, errors.InternalServerError("", "Internal server error, please try again later"))
+				util.RespError(c, errors.InternalServerError("", "Internal server error, please try again later"))
 			}
 		}()
 

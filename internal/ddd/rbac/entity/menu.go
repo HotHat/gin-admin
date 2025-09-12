@@ -23,21 +23,21 @@ var (
 
 // Menu management for RBAC
 type Menu struct {
-	ID          comm.ID       `json:"id" gorm:"primarykey;"`              // Unique ID
-	Code        string        `json:"code" gorm:"size:32;index;"`         // Code of menu (unique for each level)
-	Name        string        `json:"name" gorm:"size:128;index"`         // Display name of menu
-	Description string        `json:"description" gorm:"size:1024"`       // Details about menu
-	Sequence    int           `json:"sequence" gorm:"index;"`             // Sequence for sorting (Order by desc)
-	Type        string        `json:"type" gorm:"size:20;index"`          // Type of menu (page, button)
-	Path        string        `json:"path" gorm:"size:255;"`              // Access path of menu
-	Properties  string        `json:"properties" gorm:"type:text;"`       // Properties of menu (JSON)
-	Status      int           `json:"status" gorm:"index"`                // Status of menu (enabled, disabled)
-	ParentID    comm.ID       `json:"parent_id" gorm:"index;"`            // Parent ID (From Menu.ID)
-	ParentPath  string        `json:"parent_path" gorm:"size:255;index;"` // Parent path (split by .)
-	Children    *Menus        `json:"children" gorm:"-"`                  // Child menus
-	CreatedAt   time.Time     `json:"created_at" gorm:"index;"`           // Create time
-	UpdatedAt   time.Time     `json:"updated_at" gorm:"index;"`           // Update time
-	Resources   MenuResources `json:"resources" gorm:"-"`                 // Resources of menu
+	ID          comm.ID        `json:"id" gorm:"primarykey;"`              // Unique ID
+	Code        string         `json:"code" gorm:"size:32;index;"`         // Code of menu (unique for each level)
+	Name        string         `json:"name" gorm:"size:128;index"`         // Display name of menu
+	Description string         `json:"description" gorm:"size:1024"`       // Details about menu
+	Sequence    int            `json:"sequence" gorm:"index;"`             // Sequence for sorting (Order by desc)
+	Type        string         `json:"type" gorm:"size:20;index"`          // Type of menu (page, button)
+	Path        string         `json:"path" gorm:"size:255;"`              // Access path of menu
+	Properties  string         `json:"properties" gorm:"type:text;"`       // Properties of menu (JSON)
+	Status      int            `json:"status" gorm:"index"`                // Status of menu (enabled, disabled)
+	ParentID    comm.ID        `json:"parent_id" gorm:"index;"`            // Parent ID (From Menu.ID)
+	ParentPath  string         `json:"parent_path" gorm:"size:255;index;"` // Parent path (split by .)
+	Children    *Menus         `json:"children" gorm:"-"`                  // Child menus
+	CreatedAt   time.Time      `json:"created_at" gorm:"index;"`           // Create time
+	UpdatedAt   time.Time      `json:"updated_at" gorm:"index;"`           // Update time
+	Resources   *MenuResources `json:"resources" gorm:"-"`                 // Resources of menu
 }
 
 // Defining the query parameters for the `Menu` struct.
@@ -96,20 +96,31 @@ func (a Menus) SplitParentIDs() []comm.ID {
 }
 
 func (a Menus) ToTree() Menus {
-	var list Menus
+	list := Menus{}
 	m := a.ToMap()
 	for _, item := range a {
+		// init
+		if item.Children == nil {
+			children := Menus{}
+			item.Children = &children
+		}
+		if item.Resources == nil {
+			resources := MenuResources{}
+			item.Resources = &resources
+		}
+
 		if item.ParentID == 0 {
 			list = append(list, item)
 			continue
 		}
+
 		if parent, ok := m[item.ParentID]; ok {
 			if parent.Children == nil {
 				children := Menus{item}
 				parent.Children = &children
-				continue
+			} else {
+				*parent.Children = append(*parent.Children, item)
 			}
-			*parent.Children = append(*parent.Children, item)
 		}
 	}
 	return list

@@ -42,7 +42,7 @@ func (a *MenuRepo) Query(ctx context.Context, params dto.MenuQueryParam, opts ..
 	if v := params.LikeName; len(v) > 0 {
 		db = db.Where("name LIKE ?", "%"+v+"%")
 	}
-	if v := params.Status; v > 0 {
+	if v := params.Status; v != -1 {
 		db = db.Where("status = ?", v)
 	}
 	if v := params.ParentID; v > 0 {
@@ -167,7 +167,7 @@ func (a *MenuRepo) UpdateParentPath(ctx context.Context, id comm.ID, parentPath 
 }
 
 // UpdateStatusByParentPath Updates the status of all menus whose parent path starts with the provided parent path.
-func (a *MenuRepo) UpdateStatusByParentPath(ctx context.Context, parentPath string, status uint) error {
+func (a *MenuRepo) UpdateStatusByParentPath(ctx context.Context, parentPath string, status int) error {
 	result := GetMenuDB(ctx, a.DB).Where("parent_path like ?", parentPath+"%").Update("status", status)
 	return errors.WithStack(result.Error)
 }

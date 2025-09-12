@@ -141,7 +141,7 @@ func (a *MenuService) createInBatchByParent(ctx context.Context, items entity.Me
 			menuItem = item
 		}
 
-		for _, res := range item.Resources {
+		for _, res := range *item.Resources {
 			if res.ID != 0 {
 				exists, err := a.MenuResourceRepo.Exists(ctx, res.ID)
 				if err != nil {
@@ -209,7 +209,7 @@ func (a *MenuService) Query(ctx context.Context, params dto.MenuQueryParam) (*dt
 			if err != nil {
 				return nil, err
 			}
-			result.Data[i].Resources = resResult.Data
+			result.Data[i].Resources = &resResult.Data
 		}
 	}
 
@@ -311,7 +311,7 @@ func (a *MenuService) Get(ctx context.Context, id comm.ID) (*entity.Menu, error)
 	if err != nil {
 		return nil, err
 	}
-	menu.Resources = menuResResult.Data
+	menu.Resources = &menuResResult.Data
 
 	return menu, nil
 }

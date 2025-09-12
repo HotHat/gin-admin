@@ -15,6 +15,11 @@ type ResponseResult struct {
 	Error   *errors.Error `json:"error,omitempty"`
 }
 
+type ResponseSuccess struct {
+	Data              interface{} `json:"data,omitempty"`
+	*PaginationResult `json:"page,omitempty"`
+}
+
 type PaginationResult struct {
 	Total    int64 `json:"total"`
 	Current  int   `json:"current"`

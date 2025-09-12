@@ -19,10 +19,10 @@ func (a *LoginAPI) GetCaptcha(c *gin.Context) {
 	ctx := c.Request.Context()
 	data, err := a.AuthService.GetCaptcha(ctx)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResSuccess(c, data)
+	util.RespSuccess(c, data)
 }
 
 // @Tags LoginAPI
@@ -37,7 +37,7 @@ func (a *LoginAPI) ResponseCaptcha(c *gin.Context) {
 	ctx := c.Request.Context()
 	err := a.AuthService.ResponseCaptcha(ctx, c.Writer, c.Query("id"), c.Query("reload") == "1")
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 	}
 }
 
@@ -52,14 +52,14 @@ func (a *LoginAPI) Login(c *gin.Context) {
 	ctx := c.Request.Context()
 	item := new(dto.LoginForm)
 	if err := util.ParseJSON(c, item); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
 
 	data, err := a.AuthService.Login(ctx, item.Trim())
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResSuccess(c, data)
+	util.RespSuccess(c, data)
 }

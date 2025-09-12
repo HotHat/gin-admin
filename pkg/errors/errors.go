@@ -48,7 +48,7 @@ type ErrorDetail struct {
 type Error struct {
 	Code    string       `json:"code,omitempty"`
 	Message string       `json:"message,omitempty"`
-	Detail  *ErrorDetail `json:"detail,omitempty"`
+	Detail  *interface{} `json:"detail,omitempty"`
 	Status  int32        `json:"-"`
 }
 
@@ -58,11 +58,12 @@ func (e *Error) Error() string {
 }
 
 // New generates a custom error.
-func New(code, message string, status int32) error {
+func New(code, message string, status int32, detail *interface{}) error {
 	return &Error{
 		Code:    code,
 		Message: message,
 		Status:  status,
+		Detail:  detail,
 	}
 }
 

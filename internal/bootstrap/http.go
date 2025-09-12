@@ -36,10 +36,10 @@ func startHTTPServer(ctx context.Context, injector *wirex.Injector) (func(), err
 		Skip: config.C.Middleware.Recovery.Skip,
 	}))
 	e.NoMethod(func(c *gin.Context) {
-		util.ResError(c, errors.MethodNotAllowed("", "Method Not Allowed"))
+		util.RespError(c, errors.MethodNotAllowed("", "Method Not Allowed"))
 	})
 	e.NoRoute(func(c *gin.Context) {
-		util.ResError(c, errors.NotFound("", "Not Found"))
+		util.RespError(c, errors.NotFound("", "Not Found"))
 	})
 
 	//allowedPrefixes := injector.M.RouterPrefixes()

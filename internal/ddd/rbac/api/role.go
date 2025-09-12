@@ -28,16 +28,16 @@ func (a *RoleAPI) Query(c *gin.Context) {
 	ctx := c.Request.Context()
 	var params dto.RoleQueryParam
 	if err := util.ParseQuery(c, &params); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
 
 	result, err := a.RoleService.Query(ctx, params)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResPage(c, result.Data, result.PageResult)
+	util.RespPage(c, result.Data, result.PageResult)
 }
 
 // @Tags RoleAPI
@@ -53,10 +53,10 @@ func (a *RoleAPI) Get(c *gin.Context) {
 	id, _ := comm.StrToID(c.Param("id"))
 	item, err := a.RoleService.Get(ctx, id)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResSuccess(c, item)
+	util.RespSuccess(c, item)
 }
 
 // @Tags RoleAPI
@@ -72,19 +72,19 @@ func (a *RoleAPI) Create(c *gin.Context) {
 	ctx := c.Request.Context()
 	item := new(dto.RoleForm)
 	if err := util.ParseJSON(c, item); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	} else if err := item.Validate(); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
 
 	result, err := a.RoleService.Create(ctx, item)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResSuccess(c, result)
+	util.RespSuccess(c, result)
 }
 
 // @Tags RoleAPI
@@ -101,20 +101,20 @@ func (a *RoleAPI) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 	item := new(dto.RoleForm)
 	if err := util.ParseJSON(c, item); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	} else if err := item.Validate(); err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
 
 	id, _ := comm.StrToID(c.Param("id"))
 	err := a.RoleService.Update(ctx, id, item)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResOK(c)
+	util.RespOK(c)
 }
 
 // @Tags RoleAPI
@@ -130,8 +130,8 @@ func (a *RoleAPI) Delete(c *gin.Context) {
 	id, _ := comm.StrToID(c.Param("id"))
 	err := a.RoleService.Delete(ctx, id)
 	if err != nil {
-		util.ResError(c, err)
+		util.RespError(c, err)
 		return
 	}
-	util.ResOK(c)
+	util.RespOK(c)
 }

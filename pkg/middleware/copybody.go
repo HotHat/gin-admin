@@ -53,7 +53,7 @@ func CopyBodyWithConfig(config CopyBodyConfig) gin.HandlerFunc {
 		}
 
 		if err != nil {
-			util.ResError(c, errors.RequestEntityTooLarge("", "Request body too large, limit %d byte", config.MaxContentLen))
+			util.RespError(c, errors.RequestEntityTooLarge("", "Request body too large, limit %d byte", config.MaxContentLen))
 			return
 		}
 
