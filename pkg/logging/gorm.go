@@ -4,12 +4,11 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/rs/xid"
 	"gorm.io/gorm"
 )
 
 type Logger struct {
-	ID        string    `gorm:"size:20;primaryKey;" json:"id"`  // Unique ID
+	ID        int       `gorm:"size:20;primaryKey;" json:"id"`  // Unique ID
 	Level     string    `gorm:"size:20;index;" json:"level"`    // Log level
 	TraceID   string    `gorm:"size:64;index;" json:"trace_id"` // Trace ID
 	UserID    string    `gorm:"size:20;index;" json:"user_id"`  // User ID
@@ -38,7 +37,7 @@ type GormHook struct {
 
 func (h *GormHook) Exec(extra map[string]string, b []byte) error {
 	msg := &Logger{
-		ID: xid.New().String(),
+		//ID: xid.New().String(),
 	}
 	data := make(map[string]interface{})
 	err := jsoniter.Unmarshal(b, &data)
