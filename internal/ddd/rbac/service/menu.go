@@ -14,7 +14,6 @@ import (
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/dto"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/entity"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/repo"
-	"github.com/HotHat/gin-admin/v10/internal/mods/rbac/schema"
 	"github.com/HotHat/gin-admin/v10/pkg/cachex"
 	"github.com/HotHat/gin-admin/v10/pkg/encoding/json"
 	"github.com/HotHat/gin-admin/v10/pkg/encoding/yaml"
@@ -187,7 +186,7 @@ func (a *MenuService) Query(ctx context.Context, params dto.MenuQueryParam) (*dt
 
 	result, err := a.MenuRepo.Query(ctx, params, dto.MenuQueryOptions{
 		QueryOptions: util.QueryOptions{
-			OrderFields: schema.MenusOrderParams,
+			OrderFields: entity.MenusOrderParams,
 		},
 	})
 	if err != nil {

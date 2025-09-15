@@ -87,7 +87,7 @@ func (a *Casbinx) load(ctx context.Context) error {
 			ibuf := new(bytes.Buffer)
 			for item := range queue {
 				for _, res := range item.Resources {
-					_, _ = ibuf.WriteString(fmt.Sprintf("p, %s, %s, %s \n", item.RoleID, res.Path, res.Method))
+					_, _ = ibuf.WriteString(fmt.Sprintf("p, %s, %s, %s \n", comm.IDToStr(item.RoleID), res.Path, res.Method))
 				}
 			}
 			lock.Lock()

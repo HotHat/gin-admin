@@ -26,6 +26,8 @@ type MenuAPI struct {
 func (a *MenuAPI) Query(c *gin.Context) {
 	ctx := c.Request.Context()
 	var params dto.MenuQueryParam
+	params.Status = -1
+	params.IncludeResources = true
 	if err := util.ParseQuery(c, &params); err != nil {
 		util.RespError(c, err)
 		return

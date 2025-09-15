@@ -27,7 +27,7 @@ Name = "Admin"
 [Storage]
 
 [Storage.Cache]
-Type = "memory" # memory/badger/redis
+Type = "redis" # memory/badger/redis
 Delimiter = ":"
 
 [Storage.Cache.Memory]
