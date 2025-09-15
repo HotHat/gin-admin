@@ -171,3 +171,28 @@ func (a *MenuRepo) UpdateStatusByParentPath(ctx context.Context, parentPath stri
 	result := GetMenuDB(ctx, a.DB).Where("parent_path like ?", parentPath+"%").Update("status", status)
 	return errors.WithStack(result.Error)
 }
+
+func (a *MenuRepo) GetRolePermissions(ctx context.Context, roleID comm.ID) (dto.Permissions, error) {
+	menuResult, err := a.Query(ctx, dto.MenuQueryParam{
+		RoleID: roleID,
+		Status: entity.MenuStatusEnabled,
+	}, dto.MenuQueryOptions{
+		QueryOptions: util.QueryOptions{
+			SelectFields: []string{"id", "name", "path"},
+		},
+	})
+
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	permissions := dto.Permissions{}
+
+	for _, item := range menuResult.Data {
+		permissions = append(permissions, dto.Permission{
+			Label: item.Name,
+			Value: item.Path,
+		})
+	}
+	return permissions, nil
+}

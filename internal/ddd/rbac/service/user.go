@@ -231,17 +231,21 @@ func (a *UserService) GetRoleIDs(ctx context.Context, id comm.ID) ([]comm.ID, er
 }
 
 // GetUserInfo Get user info
-func (a *UserService) GetUserInfo(ctx context.Context) (*entity.User, error) {
+func (a *UserService) GetUserInfo(ctx context.Context) (*dto.UserInfo, error) {
 	if util.FromIsRootUser(ctx) {
 		userID, err := comm.StrToID(config.C.General.Root.ID)
 		if err != nil {
 			return nil, err
 		}
-		return &entity.User{
-			ID:       userID,
-			Username: config.C.General.Root.Username,
-			Name:     config.C.General.Root.Name,
-			Status:   entity.UserStatusActivated,
+		permissions, err := a.MenuRepo.GetRolePermissions(ctx, 0)
+		if err != nil {
+			return nil, err
+		}
+		return &dto.UserInfo{
+			ID:          userID,
+			Username:    config.C.General.Root.Username,
+			Name:        config.C.General.Root.Name,
+			Permissions: permissions,
 		}, nil
 	}
 
@@ -271,7 +275,24 @@ func (a *UserService) GetUserInfo(ctx context.Context) (*entity.User, error) {
 	}
 	user.Roles = userRoleResult.Data
 
-	return user, nil
+	var roleID comm.ID
+	if len(user.Roles) > 0 {
+		roleID = user.Roles[0].RoleID
+	}
+
+	permissions, err := a.MenuRepo.GetRolePermissions(ctx, roleID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UserInfo{
+		ID:          userID,
+		Name:        user.Name,
+		Username:    user.Username,
+		Phone:       user.Phone,
+		Email:       user.Email,
+		Permissions: permissions,
+	}, nil
 }
 
 // UpdatePassword Change login password

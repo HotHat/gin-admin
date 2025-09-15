@@ -120,7 +120,7 @@ func (a *Casbinx) load(ctx context.Context) error {
 			return err
 		}
 		// set readonly
-		_ = os.Chmod(policyFile, 0444)
+		//_ = os.Chmod(policyFile, 0444)
 
 		modelFile := filepath.Join(config.C.General.WorkDir, config.C.Middleware.Casbin.ModelFile)
 		e, err := casbin.NewEnforcer(modelFile, policyFile)

@@ -12,6 +12,17 @@ import (
 	Assert "github.com/stretchr/testify/assert"
 )
 
+func TestUserInfo(t *testing.T) {
+	e := tester(t)
+	var user dto.UserInfo
+	e.GET(baseAPI+"/user").WithHeader(
+		"Authorization",
+		"Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTc5ODU3NjEsImlhdCI6MTc1Nzg5OTM2MSwibmJmIjoxNzU3ODk5MzYxLCJzdWIiOiI1In0.kMeckM2m6bWeiF73_NWemGpKrRo1HZ2Orq7FVTqrAyF-nYKOaPTDqyjLpUE9I-zp1hG5zbaQQ7RK9d8ZaqWuZw").
+		Expect().Status(http.StatusOK).JSON().Decode(&user)
+
+	printJson(user)
+}
+
 func TestUser(t *testing.T) {
 	e := tester(t)
 

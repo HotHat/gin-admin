@@ -2,6 +2,7 @@ package ddd
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"net/http"
@@ -50,7 +51,7 @@ func SetConfig() {
 	config.MustLoad(workDir, strings.Split("dev", ",")...)
 	config.C.General.WorkDir = workDir
 	config.C.Middleware.Static.Dir = staticDir
-	config.C.Print()
+	//config.C.Print()
 	config.C.PreLoad()
 	ctx := context.Background()
 	injector, _, err := wirex.BuildInjector(ctx)
@@ -74,4 +75,9 @@ func tester(t *testing.T) *httpexpect.Expect {
 			httpexpect.NewDebugPrinter(t, true),
 		},
 	})
+}
+
+func printJson(data interface{}) {
+	s, _ := json.MarshalIndent(data, "", "\t")
+	fmt.Println(string(s))
 }

@@ -222,6 +222,23 @@ func (a *UserForm) FillTo(user *entity.User) error {
 	return nil
 }
 
+type Permission struct {
+	Label string `json:"label"`
+	Value string `json:"value"`
+}
+
+type Permissions []Permission
+
+// UserForm Defining the data structure for creating a `User` struct.
+type UserInfo struct {
+	ID          comm.ID     `json:"id"`          // Username for login
+	Username    string      `json:"username"`    // Username for login
+	Name        string      `json:"name"`        // Name of user
+	Phone       string      `json:"phone"`       // Phone number of user
+	Email       string      `json:"email"`       // Email of user
+	Permissions Permissions `json:"permissions"` // Roles of user
+}
+
 // UserRoleQueryParam Defining the query parameters for the `UserRole` struct.
 type UserRoleQueryParam struct {
 	util.PaginationParam
