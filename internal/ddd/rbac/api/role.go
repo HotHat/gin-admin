@@ -31,6 +31,13 @@ func (a *RoleAPI) Query(c *gin.Context) {
 		util.RespError(c, err)
 		return
 	}
+	params.PaginationParam.Init()
+
+	paramMap := c.Request.URL.Query()
+	if len(paramMap) == 0 {
+		params.Status = 1
+		params.ResultType = "select"
+	}
 
 	result, err := a.RoleService.Query(ctx, params)
 	if err != nil {

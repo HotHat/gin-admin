@@ -128,10 +128,15 @@ func RespPage(c *gin.Context, v interface{}, pr *PaginationResult) {
 		v = make([]interface{}, 0)
 	}
 
-	ResJSON(c, http.StatusOK, ResponseSuccess{
-		Data:             v,
-		PaginationResult: pr,
-	})
+	if pr != nil {
+		ResJSON(c, http.StatusOK, ResponseSuccess{
+			Data:             v,
+			PaginationResult: pr,
+		})
+	} else {
+		ResJSON(c, http.StatusOK, v)
+	}
+
 }
 
 func ResError(c *gin.Context, err error, status ...int) {

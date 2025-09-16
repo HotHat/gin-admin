@@ -2,8 +2,6 @@ package admin
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/HotHat/gin-admin/v10/internal/config"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/comm"
 	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/service"
@@ -70,7 +68,7 @@ func (a *AdminHandler) GetHandlers() []gin.HandlerFunc {
 			},
 			GetSubjects: func(c *gin.Context) []string {
 				ids := util.FromUserCache(c.Request.Context()).RoleIDs
-				fmt.Println("user role ids", ids)
+				//fmt.Println("user role ids", ids)
 				return ids
 			},
 		}),

@@ -33,6 +33,16 @@ type PaginationParam struct {
 	PageSize   int  `form:"pageSize" binding:"max=100"`
 }
 
+func (param *PaginationParam) Init() {
+	if param.Current <= 0 {
+		param.Current = 1
+	}
+
+	if param.PageSize <= 0 {
+		param.PageSize = 15
+	}
+}
+
 type QueryOptions struct {
 	SelectFields []string
 	OmitFields   []string
