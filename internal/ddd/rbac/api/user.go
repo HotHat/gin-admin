@@ -28,7 +28,14 @@ type UserAPI struct {
 // @Router /api/v1/users [get]
 func (a *UserAPI) Query(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dto.UserQueryParam
+	params := dto.UserQueryParam{
+		Status: -1,
+		PaginationParam: util.PaginationParam{
+			Current:  1,
+			PageSize: 15,
+		},
+	}
+
 	if err := util.ParseQuery(c, &params); err != nil {
 		util.RespError(c, err)
 		return

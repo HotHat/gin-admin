@@ -25,9 +25,15 @@ type MenuAPI struct {
 // @Router /api/v1/menus [get]
 func (a *MenuAPI) Query(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dto.MenuQueryParam
-	params.Status = -1
-	params.IncludeResources = true
+	params := dto.MenuQueryParam{
+		Status: -1,
+		PaginationParam: util.PaginationParam{
+			Pagination: false,
+			Current:    1,
+			PageSize:   15,
+		},
+	}
+
 	if err := util.ParseQuery(c, &params); err != nil {
 		util.RespError(c, err)
 		return

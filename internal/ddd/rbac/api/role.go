@@ -26,17 +26,23 @@ type RoleAPI struct {
 // @Router /api/v1/roles [get]
 func (a *RoleAPI) Query(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dto.RoleQueryParam
+	params := dto.RoleQueryParam{
+		ResultType: "select",
+		Status:     -1,
+		PaginationParam: util.PaginationParam{
+			Current:  1,
+			PageSize: 15,
+		},
+	}
+
 	if err := util.ParseQuery(c, &params); err != nil {
 		util.RespError(c, err)
 		return
 	}
-	params.PaginationParam.Init()
 
 	paramMap := c.Request.URL.Query()
-	if len(paramMap) == 0 {
-		params.Status = 1
-		params.ResultType = "select"
+	if len(paramMap) > 0 {
+		params.ResultType = ""
 	}
 
 	result, err := a.RoleService.Query(ctx, params)
