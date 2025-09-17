@@ -52,7 +52,14 @@ func (a *UserService) Query(ctx context.Context, params dto.UserQueryParam) (*dt
 		}
 		userRolesMap := userRoleResult.Data.ToUserIDMap()
 		for _, user := range result.Data {
-			user.Roles = userRolesMap[user.ID]
+			var roleItems []dto.UserRoleItem
+			for _, role := range userRolesMap[user.ID] {
+				roleItems = append(roleItems, dto.UserRoleItem{
+					ID:   role.RoleID,
+					Name: role.RoleName,
+				})
+			}
+			user.Roles = roleItems
 		}
 	}
 
@@ -104,26 +111,29 @@ func (a *UserService) Create(ctx context.Context, formItem *dto.UserForm) (*enti
 	if err := formItem.FillTo(user); err != nil {
 		return nil, err
 	}
-
+	var userRoles entity.UserRoles
 	err = a.Trans.Exec(ctx, func(ctx context.Context) error {
 		if err := a.UserRepo.Create(ctx, user); err != nil {
 			return err
 		}
 
-		for _, userRole := range formItem.Roles {
+		for _, roleId := range formItem.Roles {
+			var userRole entity.UserRole
 			//userRole.ID = util.NewXID()
 			userRole.UserID = user.ID
+			userRole.RoleID = roleId
 			userRole.CreatedAt = time.Now()
-			if err := a.UserRoleRepo.Create(ctx, userRole); err != nil {
+			if err := a.UserRoleRepo.Create(ctx, &userRole); err != nil {
 				return err
 			}
+			userRoles = append(userRoles, &userRole)
 		}
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
-	user.Roles = formItem.Roles
+	user.Roles = userRoles
 
 	return user, nil
 }
@@ -157,16 +167,14 @@ func (a *UserService) Update(ctx context.Context, id comm.ID, formItem *dto.User
 		if err := a.UserRoleRepo.DeleteByUserID(ctx, id); err != nil {
 			return err
 		}
-		for _, userRole := range formItem.Roles {
-			//if userRole.ID == 0 {
-			//userRole.ID = util.NewXID()
-			//}
+		for _, roleId := range formItem.Roles {
+			var userRole entity.UserRole
 			userRole.UserID = user.ID
-			if userRole.CreatedAt.IsZero() {
-				userRole.CreatedAt = time.Now()
-			}
+			userRole.RoleID = roleId
+			userRole.CreatedAt = time.Now()
 			userRole.UpdatedAt = time.Now()
-			if err := a.UserRoleRepo.Create(ctx, userRole); err != nil {
+
+			if err := a.UserRoleRepo.Create(ctx, &userRole); err != nil {
 				return err
 			}
 		}

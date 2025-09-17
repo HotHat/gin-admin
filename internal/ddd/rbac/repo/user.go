@@ -45,7 +45,7 @@ func (a *UserRepo) Query(ctx context.Context, params dto.UserQueryParam, opts ..
 		db = db.Where("status = ?", v)
 	}
 
-	var list entity.Users
+	var list dto.UserQueryItemResults
 	pageResult, err := util.WrapPageQuery(ctx, db, params.PaginationParam, opt.QueryOptions, &list)
 	if err != nil {
 		return nil, errors.WithStack(err)

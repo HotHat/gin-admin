@@ -23,6 +23,17 @@ func TestUserInfo(t *testing.T) {
 	printJson(user)
 }
 
+func TestUserList(t *testing.T) {
+	e := tester(t)
+	var user dto.UserInfo
+	e.GET(baseAPI+"/users").WithHeader(
+		"Authorization",
+		authToken).
+		Expect().Status(http.StatusOK).JSON().Decode(&user)
+
+	printJson(user)
+}
+
 func TestUser(t *testing.T) {
 	e := tester(t)
 

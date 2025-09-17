@@ -18,6 +18,8 @@ import (
 
 const (
 	baseAPI = "/api/v1"
+
+	authToken = "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTgwOTQ3MjIsImlhdCI6MTc1ODAwODMyMiwibmJmIjoxNzU4MDA4MzIyLCJzdWIiOiI1In0.bC_-AiRtjloSOvYEtfyhuiKj3bUj1eLbsfzAnaE0yq2B2VaUMOl21p_SkEYbvjItNjWdUcxNr2zW-3b_rFXcRg"
 )
 
 var (

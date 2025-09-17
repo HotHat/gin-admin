@@ -163,35 +163,16 @@ func (a *RoleForm) FillTo(role *entity.Role) error {
 	return nil
 }
 
-// UserQueryParam Defining the query parameters for the `User` struct.
-type UserQueryParam struct {
-	util.PaginationParam
-	LikeUsername string `form:"username"` // Username for login
-	LikeName     string `form:"name"`     // Name of user
-	Status       int    `form:"status"`   // Status of user (activated, freezed)
-}
-
-// UserQueryOptions Defining the query options for the `User` struct.
-type UserQueryOptions struct {
-	util.QueryOptions
-}
-
-// UserQueryResult Defining the query result for the `User` struct.
-type UserQueryResult struct {
-	Data       entity.Users
-	PageResult *util.PaginationResult
-}
-
 // UserForm Defining the data structure for creating a `User` struct.
 type UserForm struct {
-	Username string           `json:"username" binding:"required,max=64"` // Username for login
-	Name     string           `json:"name" binding:"required,max=64"`     // Name of user
-	Password string           `json:"password" binding:"max=64"`          // Password for login (md5 hash)
-	Phone    string           `json:"phone" binding:"max=32"`             // Phone number of user
-	Email    string           `json:"email" binding:"max=128"`            // Email of user
-	Remark   string           `json:"remark" binding:"max=1024"`          // Remark of user
-	Status   int              `json:"status" binding:"required"`          // Status of user (activated, freezed)
-	Roles    entity.UserRoles `json:"roles" binding:"required"`           // Roles of user
+	Username string    `json:"username" binding:"required,max=64"` // Username for login
+	Name     string    `json:"name" binding:"required,max=64"`     // Name of user
+	Password string    `json:"password" binding:"max=64"`          // Password for login (md5 hash)
+	Phone    string    `json:"phone" binding:"max=32"`             // Phone number of user
+	Email    string    `json:"email" binding:"max=128"`            // Email of user
+	Remark   string    `json:"remark" binding:"max=1024"`          // Remark of user
+	Status   int       `json:"status" binding:"required"`          // Status of user (activated, freezed)
+	Roles    []comm.ID `json:"roles" binding:"required"`           // Roles of user
 }
 
 // A validation function for the `UserForm` struct.
