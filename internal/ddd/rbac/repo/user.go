@@ -41,19 +41,24 @@ func (a *UserRepo) Query(ctx context.Context, params dto.UserQueryParam, opts ..
 	if v := params.LikeName; len(v) > 0 {
 		db = db.Where("name LIKE ?", "%"+v+"%")
 	}
-	if v := params.Status; v > 0 {
+	if v := params.Phone; len(v) > 0 {
+		db = db.Where("phone LIKE ?", "%"+v+"%")
+	}
+	if v := params.Status; v > -1 {
 		db = db.Where("status = ?", v)
 	}
 
-	var list dto.UserQueryItemResults
+	var list entity.Users
 	pageResult, err := util.WrapPageQuery(ctx, db, params.PaginationParam, opt.QueryOptions, &list)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
+	data := dto.UserQueryItemResults{}
+	data.FromEntity(&list)
 	queryResult := &dto.UserQueryResult{
 		PageResult: pageResult,
-		Data:       list,
+		Data:       data,
 	}
 	return queryResult, nil
 }

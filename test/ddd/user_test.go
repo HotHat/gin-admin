@@ -95,7 +95,7 @@ func TestUser(t *testing.T) {
 		Email:    "test@gmail.com",
 		Remark:   "test user",
 		Status:   entity.UserStatusActivated,
-		Roles:    entity.UserRoles{{RoleID: role.ID}},
+		Roles:    []comm.ID{role.ID},
 	}
 
 	var user entity.User

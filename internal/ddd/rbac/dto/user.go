@@ -1,9 +1,8 @@
 package dto
 
 import (
-	"time"
-
 	"github.com/HotHat/gin-admin/v10/internal/ddd/comm"
+	"github.com/HotHat/gin-admin/v10/internal/ddd/rbac/entity"
 	"github.com/HotHat/gin-admin/v10/pkg/util"
 )
 
@@ -12,6 +11,7 @@ type UserQueryParam struct {
 	util.PaginationParam
 	LikeUsername string `form:"username"` // Username for login
 	LikeName     string `form:"name"`     // Name of user
+	Phone        string `form:"phone"`    // Name of user
 	Status       int    `form:"status"`   // Status of user (activated, freezed)
 }
 
@@ -40,16 +40,32 @@ type UserQueryItemResult struct {
 	Remark    string         `json:"remark" binding:"max=1024"`          // Remark of user
 	Status    int            `json:"status" binding:"required"`          // Status of user (activated, freezed)
 	Roles     []UserRoleItem `json:"roles" binding:"required"`           // Roles of user
-	CreatedAt time.Time      `json:"created_at" gorm:"index;"`           // Create time
-	UpdatedAt time.Time      `json:"updated_at" gorm:"index;"`           // Update time
+	CreatedAt string         `json:"created_at" gorm:"index;"`           // Create time
+	UpdatedAt string         `json:"updated_at" gorm:"index;"`           // Update time
 }
 
 type UserQueryItemResults []*UserQueryItemResult
 
-func (a UserQueryItemResults) ToIDs() []comm.ID {
+func (a *UserQueryItemResults) ToIDs() []comm.ID {
 	var ids []comm.ID
-	for _, item := range a {
+	for _, item := range *a {
 		ids = append(ids, item.ID)
 	}
 	return ids
+}
+
+func (a *UserQueryItemResults) FromEntity(s *entity.Users) {
+	for _, item := range *s {
+		*a = append(*a, &UserQueryItemResult{
+			ID:        item.ID,
+			Username:  item.Username,
+			Name:      item.Name,
+			Phone:     item.Phone,
+			Email:     item.Email,
+			Remark:    item.Remark,
+			Status:    item.Status,
+			CreatedAt: item.CreatedAt.Format("2006-01-02 15:04:05"),
+			UpdatedAt: item.UpdatedAt.Format("2006-01-02 15:04:05"),
+		})
+	}
 }
