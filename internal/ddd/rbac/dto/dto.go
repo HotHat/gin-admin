@@ -171,7 +171,7 @@ type UserForm struct {
 	Phone    string    `json:"phone" binding:"max=32"`             // Phone number of user
 	Email    string    `json:"email" binding:"max=128"`            // Email of user
 	Remark   string    `json:"remark" binding:"max=1024"`          // Remark of user
-	Status   int       `json:"status" binding:"required"`          // Status of user (activated, freezed)
+	Status   int       `json:"status" binding:""`                  // Status of user (activated, freezed)
 	Roles    []comm.ID `json:"roles" binding:"required"`           // Roles of user
 }
 
