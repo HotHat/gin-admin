@@ -28,10 +28,10 @@ func (a *LoginForm) Trim() *LoginForm {
 
 // MenuForm Defining the data structure for creating a `Menu` struct.
 type MenuForm struct {
-	Code        string               `json:"code" binding:"required,max=32"`            // Code of menu (unique for each level)
+	Code        string               `json:"code" binding:"max=32"`                     // Code of menu (unique for each level)
 	Name        string               `json:"name" binding:"required,max=128"`           // Display name of menu
 	Description string               `json:"description"`                               // Details about menu
-	Sequence    int                  `json:"sequence"`                                  // Sequence for sorting (Order by desc)
+	Sequence    int                  `json:"order"`                                     // Sequence for sorting (Order by desc)
 	Type        string               `json:"type" binding:"required,oneof=page button"` // Type of menu (page, button)
 	Path        string               `json:"path"`                                      // Access path of menu
 	Properties  string               `json:"properties"`                                // Properties of menu (JSON)
@@ -141,12 +141,12 @@ type RoleQueryResult struct {
 
 // RoleForm Defining the data structure for creating a `Role` struct.
 type RoleForm struct {
-	Code        string           `json:"code" binding:"required,max=32"`      // Code of role (unique)
-	Name        string           `json:"name" binding:"required,max=128"`     // Display name of role
-	Description string           `json:"description"`                         // Details about role
-	Sequence    int              `json:"sequence"`                            // Sequence for sorting
-	Status      int              `json:"status" binding:"required,oneof=1 0"` // Status of role (enabled, disabled)
-	Menus       entity.RoleMenus `json:"menus"`                               // Role menu list
+	Code        string           `json:"code" binding:"max=32"`           // Code of role (unique)
+	Name        string           `json:"name" binding:"required,max=128"` // Display name of role
+	Description string           `json:"description"`                     // Details about role
+	Sequence    int              `json:"sequence"`                        // Sequence for sorting
+	Status      int              `json:"status" binding:"oneof=1 0"`      // Status of role (enabled, disabled)
+	Menus       entity.RoleMenus `json:"menus"`                           // Role menu list
 }
 
 // Validate A validation function for the `RoleForm` struct.

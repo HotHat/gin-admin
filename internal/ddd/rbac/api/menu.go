@@ -39,6 +39,10 @@ func (a *MenuAPI) Query(c *gin.Context) {
 		return
 	}
 
+	if len(c.Request.URL.RawQuery) == 0 {
+		params.IncludeResources = true
+	}
+
 	result, err := a.MenuService.Query(ctx, params)
 	if err != nil {
 		util.RespError(c, err)
